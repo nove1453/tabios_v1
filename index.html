@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>Tabi OS — 旅の世界をひとつに。</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&family=Montserrat:wght@400;500;600;700;800&family=Noto+Sans+JP:wght@300;400;500;700&family=Noto+Serif+JP:wght@700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- ━━ App Header ━━━━━━━━━━━━━━━━━━━━ -->
+  <header class="app-header">
+    <span class="header-eyecatch">TABI OS</span>
+    <p class="header-tagline">旅の世界をひとつに。</p>
+  </header>
+
+  <!-- ━━ Tab Navigation (sticky) ━━━━━━━ -->
+  <nav class="tab-nav" id="tabNav">
+    <button class="tab-btn active" data-panel="diagnosis">
+      <svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
+      <span class="tab-label">旅人格診断</span>
+    </button>
+    <button class="tab-btn" data-panel="prompt">
+      <svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line></svg>
+      <span class="tab-label">旅プラン作成</span>
+    </button>
+    <button class="tab-btn" data-panel="shiori">
+      <svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path></svg>
+      <span class="tab-label">旅のしおり</span>
+    </button>
+  </nav>
+
+  <!-- ━━ Main Panels ━━━━━━━━━━━━━━━━━━━ -->
+  <main class="app-main">
+
+    <!-- ══════════════════════════════════
+         PANEL 1: 旅人格診断
+         ══════════════════════════════════ -->
+    <section id="panel-diagnosis" class="app-panel active">
+      <div class="panel-inner">
+
+        <div class="panel-hero panel-hero--diagnosis">
+          <span class="hero-eyecatch">Tabi Personality Test</span>
+          <h2 class="hero-title">旅役職診断</h2>
+          <p class="hero-desc">32の質問から、あなただけの「旅の役職」を導き出します。</p>
+        </div>
+
+        <form id="quiz-form" novalidate>
+          <div id="questions-container" class="questions-wrapper"></div>
+          <div id="quiz-error" class="error-toast" style="display:none;"></div>
+          <div class="form-actions">
+            <button type="submit" class="btn-primary">結果を診断する</button>
+          </div>
+        </form>
+
+        <!-- 診断結果 -->
+        <div id="result-view" class="diagnosis-result" style="display:none;">
+          <div class="result-img-wrap">
+            <img id="result-img" class="result-img" src="" alt="旅役職イラスト">
+            <div id="result-img-fallback" class="result-img-fallback">
+              <span class="fallback-icon">✦</span>
+              <p>旅のおもいで準備中</p>
+            </div>
+          </div>
+          <span id="result-code" class="result-code"></span>
+          <h2 id="result-name" class="result-name"></h2>
+          <p id="result-tagline" class="result-tagline"></p>
+          <div class="result-desc-card">
+            <p id="result-desc"></p>
+          </div>
+          <div class="axis-chart">
+            <h4 class="axis-chart-title">— 旅パラメータ —</h4>
+            <div class="axis-row">
+              <span class="axis-l">P 計画型</span>
+              <div class="axis-track"><div id="bar-PF" class="axis-bar"></div></div>
+              <span class="axis-r">F 自由型</span>
+            </div>
+            <div class="axis-row">
+              <span class="axis-l">A アクティブ</span>
+              <div class="axis-track"><div id="bar-AC" class="axis-bar"></div></div>
+              <span class="axis-r">C チル</span>
+            </div>
+            <div class="axis-row">
+              <span class="axis-l">V 映え</span>
+              <div class="axis-track"><div id="bar-VE" class="axis-bar"></div></div>
+              <span class="axis-r">E 体験</span>
+            </div>
+            <div class="axis-row">
+              <span class="axis-l">L 贅沢</span>
+              <div class="axis-track"><div id="bar-LS" class="axis-bar"></div></div>
+              <span class="axis-r">S 節約</span>
+            </div>
+          </div>
+          <button id="btn-to-prompt" class="btn-primary mt-20">このタイプで旅プランを作る →</button>
+          <button id="btn-reset-quiz" class="btn-ghost">もう一度診断する</button>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ══════════════════════════════════
+         PANEL 2: 旅プラン作成
+         ══════════════════════════════════ -->
+    <section id="panel-prompt" class="app-panel">
+      <div class="panel-inner">
+
+        <div class="panel-hero panel-hero--prompt">
+          <span class="hero-eyecatch">Trip Plan Generator</span>
+          <h2 class="hero-title">旅プラン作成</h2>
+          <p class="hero-desc">条件を入力してChatGPT用プロンプトを生成します。</p>
+        </div>
+
+        <form id="prompt-form" novalidate>
+
+          <!-- 01 旅のキャスト -->
+          <div class="form-section">
+            <h3 class="section-heading"><span class="section-num">01</span>旅のキャスト</h3>
+
+            <div class="form-group">
+              <label class="form-label">あなたの旅役職 <span class="req">*</span></label>
+              <select id="my-personality" class="form-select" required>
+                <option value="" disabled selected>選択してください</option>
+                <option value="旅演出家">旅演出家 (PAVL)</option>
+                <option value="景色収集家">景色収集家 (PAVS)</option>
+                <option value="感性探訪家">感性探訪家 (PAEL)</option>
+                <option value="路地開拓士">路地開拓士 (PAES)</option>
+                <option value="余白貴族">余白貴族 (PCVL)</option>
+                <option value="カフェ漂流家">カフェ漂流家 (PCVS)</option>
+                <option value="癒し滞在家">癒し滞在家 (PCEL)</option>
+                <option value="静かな放浪家">静かな放浪家 (PCES)</option>
+                <option value="夜更かし演出家">夜更かし演出家 (FAVL)</option>
+                <option value="映え放浪家">映え放浪家 (FAVS)</option>
+                <option value="自由探検家">自由探検家 (FAEL)</option>
+                <option value="気まぐれ開拓士">気まぐれ開拓士 (FAES)</option>
+                <option value="月夜の漂流家">月夜の漂流家 (FCVL)</option>
+                <option value="余白収集家">余白収集家 (FCVS)</option>
+                <option value="空気感旅行家">空気感旅行家 (FCEL)</option>
+                <option value="風まかせ人">風まかせ人 (FCES)</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">誰と行く？ <span class="req">*</span></label>
+              <div class="chips">
+                <input type="radio" id="c-solo" name="companion" value="一人旅" class="chip-r" checked>
+                <label for="c-solo" class="chip">一人旅</label>
+                <input type="radio" id="c-lover" name="companion" value="恋人" class="chip-r">
+                <label for="c-lover" class="chip">恋人</label>
+                <input type="radio" id="c-friends" name="companion" value="友達" class="chip-r">
+                <label for="c-friends" class="chip">友達</label>
+                <input type="radio" id="c-family" name="companion" value="家族" class="chip-r">
+                <label for="c-family" class="chip">家族</label>
+                <input type="radio" id="c-couple" name="companion" value="夫婦" class="chip-r">
+                <label for="c-couple" class="chip">夫婦</label>
+              </div>
+            </div>
+
+            <div id="partner-wrap" class="form-group" style="display:none;">
+              <label class="form-label">同行者の旅役職 <span class="opt">任意</span></label>
+              <select id="partner-personality" class="form-select">
+                <option value="">わからない / 指定なし</option>
+                <option value="旅演出家">旅演出家 (PAVL)</option>
+                <option value="景色収集家">景色収集家 (PAVS)</option>
+                <option value="感性探訪家">感性探訪家 (PAEL)</option>
+                <option value="路地開拓士">路地開拓士 (PAES)</option>
+                <option value="余白貴族">余白貴族 (PCVL)</option>
+                <option value="カフェ漂流家">カフェ漂流家 (PCVS)</option>
+                <option value="癒し滞在家">癒し滞在家 (PCEL)</option>
+                <option value="静かな放浪家">静かな放浪家 (PCES)</option>
+                <option value="夜更かし演出家">夜更かし演出家 (FAVL)</option>
+                <option value="映え放浪家">映え放浪家 (FAVS)</option>
+                <option value="自由探検家">自由探検家 (FAEL)</option>
+                <option value="気まぐれ開拓士">気まぐれ開拓士 (FAES)</option>
+                <option value="月夜の漂流家">月夜の漂流家 (FCVL)</option>
+                <option value="余白収集家">余白収集家 (FCVS)</option>
+                <option value="空気感旅行家">空気感旅行家 (FCEL)</option>
+                <option value="風まかせ人">風まかせ人 (FCES)</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- 02 旅の輪郭 -->
+          <div class="form-section">
+            <h3 class="section-heading"><span class="section-num">02</span>旅の輪郭</h3>
+
+            <div class="form-group">
+              <label class="form-label" for="destination">行き先 <span class="req">*</span></label>
+              <input type="text" id="destination" class="form-input" placeholder="例: 京都、宮古島、韓国ソウル" required>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label class="form-label" for="arrival-dt">到着日時 <span class="req">*</span></label>
+                <input type="datetime-local" id="arrival-dt" class="form-input" required>
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="departure-dt">出発日時 <span class="req">*</span></label>
+                <input type="datetime-local" id="departure-dt" class="form-input" required>
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label class="form-label" for="duration">日程 <span class="req">*</span></label>
+                <select id="duration" class="form-select" required>
+                  <option value="" disabled selected>選択</option>
+                  <option value="日帰り">日帰り</option>
+                  <option value="1泊2日">1泊2日</option>
+                  <option value="2泊3日">2泊3日</option>
+                  <option value="3泊4日">3泊4日</option>
+                  <option value="4泊以上">4泊以上</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="members">人数 <span class="req">*</span></label>
+                <input type="number" id="members" class="form-input" min="1" value="1" required>
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label class="form-label" for="budget">予算（1人） <span class="req">*</span></label>
+                <select id="budget" class="form-select" required>
+                  <option value="" disabled selected>選択</option>
+                  <option value="3万円以下">3万円以下</option>
+                  <option value="5万円程度">5万円程度</option>
+                  <option value="10万円程度">10万円程度</option>
+                  <option value="15万円以上">15万円以上</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="transport">移動手段 <span class="req">*</span></label>
+                <select id="transport" class="form-select" required>
+                  <option value="" disabled selected>選択</option>
+                  <option value="車・レンタカー">車・レンタカー</option>
+                  <option value="新幹線">新幹線</option>
+                  <option value="飛行機">飛行機</option>
+                  <option value="電車・バス等の公共交通機関">公共交通機関</option>
+                  <option value="徒歩中心">徒歩中心</option>
+                  <option value="現地で決める">現地で決める</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <!-- 03 コンディション -->
+          <div class="form-section">
+            <h3 class="section-heading"><span class="section-num">03</span>旅のコンディション</h3>
+
+            <div class="form-group">
+              <label class="form-label">旅のテーマ <span class="opt">複数可</span></label>
+              <div class="chips">
+                <input type="checkbox" id="th-heal" value="癒されたい" class="chip-c">
+                <label for="th-heal" class="chip">癒されたい</label>
+                <input type="checkbox" id="th-fun" value="はしゃぎたい" class="chip-c">
+                <label for="th-fun" class="chip">はしゃぎたい</label>
+                <input type="checkbox" id="th-eat" value="食べまくりたい" class="chip-c">
+                <label for="th-eat" class="chip">食べまくりたい</label>
+                <input type="checkbox" id="th-photo" value="写真を撮りたい" class="chip-c">
+                <label for="th-photo" class="chip">写真を撮りたい</label>
+                <input type="checkbox" id="th-nature" value="自然に逃げたい" class="chip-c">
+                <label for="th-nature" class="chip">自然に逃げたい</label>
+                <input type="checkbox" id="th-luxury" value="贅沢したい" class="chip-c">
+                <label for="th-luxury" class="chip">贅沢したい</label>
+                <input type="checkbox" id="th-special" value="非日常を味わいたい" class="chip-c">
+                <label for="th-special" class="chip">非日常を味わいたい</label>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">体力ペース <span class="req">*</span></label>
+              <div class="chips">
+                <input type="radio" id="ft-full" name="fatigue" value="朝から夜までアクティブに動ける" class="chip-r" checked>
+                <label for="ft-full" class="chip">朝から夜まで動ける</label>
+                <input type="radio" id="ft-rest" name="fatigue" value="お昼すぎにカフェ休憩が欲しい" class="chip-r">
+                <label for="ft-rest" class="chip">昼に休憩欲しい</label>
+                <input type="radio" id="ft-few" name="fatigue" value="1日2〜3箇所をのんびり" class="chip-r">
+                <label for="ft-few" class="chip">2〜3箇所で十分</label>
+                <input type="radio" id="ft-tired" name="fatigue" value="移動が長いとすぐ疲れる" class="chip-r">
+                <label for="ft-tired" class="chip">移動で疲れる</label>
+              </div>
+            </div>
+          </div>
+
+          <!-- 04 こだわりとタブー -->
+          <div class="form-section">
+            <h3 class="section-heading"><span class="section-num">04</span>こだわりとタブー</h3>
+
+            <div class="form-group">
+              <label class="form-label">ごはんの優先事項 <span class="req">*</span></label>
+              <div class="chips">
+                <input type="radio" id="eat-q" name="eat" value="行列があっても名店に行きたい" class="chip-r" checked>
+                <label for="eat-q" class="chip">行列店でも行く</label>
+                <input type="radio" id="eat-m" name="eat" value="雰囲気や空間を大切にしたい" class="chip-r">
+                <label for="eat-m" class="chip">雰囲気重視</label>
+                <input type="radio" id="eat-c" name="eat" value="コスパ重視で美味しい店" class="chip-r">
+                <label for="eat-c" class="chip">コスパ重視</label>
+                <input type="radio" id="eat-l" name="eat" value="地元の人が愛するローカル店" class="chip-r">
+                <label for="eat-l" class="chip">ローカル重視</label>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">写真・スマホの距離感 <span class="req">*</span></label>
+              <div class="chips">
+                <input type="radio" id="ph-hv" name="photo" value="最高の1枚のために時間をかけたい" class="chip-r" checked>
+                <label for="ph-hv" class="chip">かなり撮りたい</label>
+                <input type="radio" id="ph-lt" name="photo" value="思い出用に数枚あれば十分" class="chip-r">
+                <label for="ph-lt" class="chip">数枚でOK</label>
+                <input type="radio" id="ph-ex" name="photo" value="体験優先でスマホはサブ" class="chip-r">
+                <label for="ph-ex" class="chip">体験優先</label>
+                <input type="radio" id="ph-dt" name="photo" value="デジタルデトックスしたい" class="chip-r">
+                <label for="ph-dt" class="chip">スマホ最小限</label>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">避けたいこと <span class="opt">複数可</span></label>
+              <div class="chips">
+                <input type="checkbox" id="av-q" value="行列" class="chip-c">
+                <label for="av-q" class="chip">行列</label>
+                <input type="checkbox" id="av-cr" value="激しい混雑・人混み" class="chip-c">
+                <label for="av-cr" class="chip">人混み</label>
+                <input type="checkbox" id="av-er" value="早起き" class="chip-c">
+                <label for="av-er" class="chip">早起き</label>
+                <input type="checkbox" id="av-ti" value="詰め込みスケジュール" class="chip-c">
+                <label for="av-ti" class="chip">詰め込み</label>
+                <input type="checkbox" id="av-lm" value="長距離移動" class="chip-c">
+                <label for="av-lm" class="chip">長距離移動</label>
+                <input type="checkbox" id="av-op" value="観光地価格の店" class="chip-c">
+                <label for="av-op" class="chip">観光地価格</label>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">宿に求めること <span class="opt">複数可</span></label>
+              <div class="chips">
+                <input type="checkbox" id="ht-sl" value="寝れれば十分" class="chip-c">
+                <label for="ht-sl" class="chip">寝れればOK</label>
+                <input type="checkbox" id="ht-sa" value="サウナ・整い体験" class="chip-c">
+                <label for="ht-sa" class="chip">サウナ</label>
+                <input type="checkbox" id="ht-vw" value="客室からの絶景" class="chip-c">
+                <label for="ht-vw" class="chip">景色</label>
+                <input type="checkbox" id="ht-ph" value="インテリアや空間が映える" class="chip-c">
+                <label for="ht-ph" class="chip">映え</label>
+                <input type="checkbox" id="ht-on" value="温泉・大浴場" class="chip-c">
+                <label for="ht-on" class="chip">温泉</label>
+                <input type="checkbox" id="ht-lc" value="交通アクセスの良い立地" class="chip-c">
+                <label for="ht-lc" class="chip">立地</label>
+              </div>
+            </div>
+          </div>
+
+          <div id="prompt-error" class="error-toast" style="display:none;"></div>
+
+          <div class="form-actions">
+            <button type="submit" class="btn-primary">プロンプトを生成する</button>
+          </div>
+        </form>
+
+        <!-- プロンプト出力 -->
+        <div id="prompt-result" class="prompt-result" style="display:none;">
+          <div class="prompt-result-hd">
+            <span class="prompt-result-label">Your Prompt</span>
+            <button id="btn-copy-prompt" class="btn-copy">コピー</button>
+          </div>
+          <pre id="prompt-output" class="prompt-output"></pre>
+          <p id="copy-toast" class="copy-toast" style="display:none;">✦ コピーしました！ChatGPTに貼り付けてください。</p>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ══════════════════════════════════
+         PANEL 3: 旅のしおり
+         ══════════════════════════════════ -->
+    <section id="panel-shiori" class="app-panel">
+      <div class="panel-inner">
+
+        <div class="panel-hero panel-hero--shiori">
+          <span class="hero-eyecatch">Mobile Shiori</span>
+          <h2 class="hero-title">旅のしおり</h2>
+          <p class="hero-desc">ChatGPTのJSONを貼り付けて、旅のしおりを生成します。</p>
+        </div>
+
+        <div class="form-section">
+          <h3 class="section-heading"><span class="section-num">01</span>JSONを貼り付ける</h3>
+          <div class="form-group">
+            <label class="form-label" for="json-input">ChatGPTの出力（JSON）</label>
+            <textarea
+              id="json-input"
+              class="form-textarea"
+              placeholder='{ "trip_title": "...", "trip_concept": "...", "days": [...], "hotel": {...}, "summary": "..." }'
+            ></textarea>
+          </div>
+          <div id="shiori-error" class="error-toast" style="display:none;"></div>
+          <div class="form-actions">
+            <button id="btn-gen-shiori" class="btn-primary btn-accent">しおりを生成する →</button>
+          </div>
+        </div>
+
+        <div class="shiori-hint">
+          <div class="shiori-hint-icon">✈</div>
+          <p>しおりは<strong>別タブ</strong>で開きます。<br>Instagramストーリー用画像（1080×1920px）として保存できます。</p>
+        </div>
+
+      </div>
+    </section>
+
+  </main>
+
+  <script src="app.js"></script>
+</body>
+</html>
