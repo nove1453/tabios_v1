@@ -110,8 +110,6 @@ const shioriRenderer = {
     const theme = firstDay.theme || data.trip_concept || '';
     const tags = this._getStoryTags(data);
     const rows = this._getStoryRows(data);
-    const footer = this._formatStoryFooter(data.summary || cfg.caption || '');
-
     const tagsHtml = tags.map(tag => `<span class="sc-tag">${this._esc(tag)}</span>`).join('');
     const rowsHtml = rows.map(row => `
       <li class="sc-route-row">
@@ -151,7 +149,6 @@ const shioriRenderer = {
           <ol class="sc-route-list">${rowsHtml}</ol>
         </section>
 
-        <p class="sc-footer-message">${footer}</p>
         <div class="sc-card-footer">
           <span></span>
           <b>Tabi OS</b>
@@ -203,13 +200,6 @@ const shioriRenderer = {
         place: item.place || '',
         note: item.reason || item.tips || ''
       }));
-  },
-
-  _formatStoryFooter(text) {
-    const compact = (text || '旅先の美しい余白を拾い集める旅。').replace(/\s+/g, '');
-    if (compact.length <= 22) return this._esc(compact);
-    const midpoint = Math.min(18, Math.ceil(compact.length / 2));
-    return `${this._esc(compact.slice(0, midpoint))}<br>${this._esc(compact.slice(midpoint, 42))}`;
   },
 
   _esc(value) {
