@@ -230,10 +230,15 @@ const shioriRenderer = {
           .filter(item => item.category !== 'move' && item.place)
           .slice(0, 2)
           .map(item => item.place);
+        const costs = (day.schedule || [])
+          .map(item => this._getCostText(item))
+          .filter(Boolean);
         return {
           time: `DAY ${day.day}`,
           place: day.theme || spots.join(' → ') || `Day ${day.day}`,
-          note: spots.join(' / ')
+          note: [spots.join(' / '), costs.length ? `目安 ${costs.join(' + ')}` : '']
+            .filter(Boolean)
+            .join(' / ')
         };
       });
     }
@@ -244,8 +249,17 @@ const shioriRenderer = {
       .map(item => ({
         time: item.time || '',
         place: item.place || '',
-        note: item.reason || item.tips || ''
+        note: [item.reason || item.tips || '', this._getCostText(item)]
+          .filter(Boolean)
+          .join(' / ')
       }));
+  },
+
+  _getCostText(item) {
+    const raw = item.cost_label ?? item.cost_estimate ?? item.cost_range ?? item.estimated_cost ?? item.price_estimate ?? item.cost_yen;
+    if (raw === undefined || raw === null || raw === '') return '';
+    if (typeof raw === 'number') return `約${raw.toLocaleString('ja-JP')}円`;
+    return String(raw);
   },
 
   _esc(value) {
@@ -331,6 +345,14 @@ const shioriRenderer = {
             <polyline points="9 18 15 12 9 6"></polyline>
           </svg>
           ${item.move_to_next}
+        </span>` : ''
+      ,
+      this._getCostText(item) ? `
+        <span class="tl-detail tl-detail-cost">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="12" y1="1" x2="12" y2="23"></line><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7H14a3.5 3.5 0 0 1 0 7H6"></path>
+          </svg>
+          ${this._getCostText(item)}
         </span>` : ''
     ].filter(Boolean).join('');
 
