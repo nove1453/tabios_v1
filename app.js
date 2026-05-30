@@ -1,559 +1,607 @@
 /* ================================================================
-   app.js — Tabi OS Main Logic
-   Modules: AppState / themeManager / linkGenerator /
-            diagnosis / promptGenerator / shioriInputHandler / AppController
-   ================================================================ */
+app.js — Tabi OS Main Logic
+Modules: AppState / themeManager / linkGenerator /
+diagnosis / promptGenerator / shioriInputHandler / AppController
+================================================================ */
 'use strict';
 
 /* ────────────────────────────────────────────────────────────────
-   0. App State
+0. App State
 ──────────────────────────────────────────────────────────────── */
 const AppState = {
-  diagnosisResult: null,   // { code, name, tagline, desc }
-  currentTab: 'diagnosis',
-  destination: ''
+diagnosisResult: null,   // { code, name, tagline, desc }
+currentTab: 'diagnosis',
+destination: ''
 };
 
 /* ────────────────────────────────────────────────────────────────
-   1. themeManager
-──────────────────────────────────────────────────────────────── */
+
+1. themeManager
+──────────────────────────────────────────────────────────────── */ 
+
 const themeManager = {
 
-  personalities: {
-    PAVL: { name:'旅演出家',      tagline:'旅全体の世界観を作り込むタイプ',             desc:'あなたが訪れる旅はすべて完璧にプロデュースされた一本の美しい映画。綿密なスケジューリングと最高級のホテル、息をのむような絶景を余すことなく楽しむカリスマです。最高の世界観と上質な空間を調和させるセンスはピカイチです。' },
-    PAVS: { name:'景色収集家',    tagline:'絶景・映えスポットを賢くコレクションするタイプ', desc:'美しい光景を絶対に見逃さない、計画的でフットワークの軽いハントマスター。無駄のないルート計画で、話題の絶景スポットや旬な景色を抜群のタイパで集めて回ります。賢くコストを抑えながらも、写真映えのクオリティには一切の妥協なしです。' },
-    PAEL: { name:'感性探訪家',    tagline:'土地の文化・アートに深くひたるタイプ',         desc:'旅先での出会いや伝統、文化体験にじっくりと時間をかける知的なオーガナイザー。旅行前の計画に余念がなく、その土地ならではのプレミアムな伝統体験や美食に惜しみなく自己投資します。体験を通して教養を豊かにしていく贅沢な旅がお似合いです。' },
-    PAES: { name:'路地開拓士',    tagline:'まだ知られていない場所を計画的に開拓するタイプ', desc:'計画的かつ効率的に、知る人ぞ知る現地のローカル体験や本物の空気をハントする探検家。ガイドブックの奥深く、地元の人が愛する体験を求めてアクティブに足を運びます。誰も気づいていない「隠れ路地の名店」を開拓することに無上の喜びを感じるタイプです。' },
-    PCVL: { name:'余白貴族',      tagline:'何もしない時間も旅の楽しみなエレガントタイプ', desc:'ラグジュアリーな時間が流れる高級ホテルや、美しいデザインに囲まれてゆったり流れるひとときを愛するエレガントな旅人。贅沢な空間をあえて「何もしない」で味わい尽くす大人な旅を好みます。上質なサービスに癒されるのが最大の幸福です。' },
-    PCVS: { name:'カフェ漂流家',  tagline:'カフェや美術館をスマートに巡るカルチャーサーファー', desc:'お気に入りのブックカフェや静かな美術館を計画的に巡りながら、自分のペースで漂うことを好むアーティスト肌。スマートでおしゃれな空間に身を置き、時間を節約しながらも心豊かに街の美観をクリップしていきます。' },
-    PCEL: { name:'癒し滞在家',    tagline:'最高の宿で心身をリセットするヒーリングタイプ', desc:'綿密なプランニングで最高の宿やリラクゼーション体験をリザーブし、極上の快適さにひたる旅のヒーラー。スパや温泉、プライベートな自然環境に囲まれながら、極上のおもてなしに身を委ねます。移動や慌ただしさは最小限に抑えるのが流儀です。' },
-    PCES: { name:'静かな放浪家',  tagline:'静かなローカルの時間に没頭するインドア旅人', desc:'事前にしっかり安全な宿泊先や基本的な流れを設計した上で、旅先では静かにローカルな時間の移ろいに没頭する思索派。豪華さよりも「居心地の良さ」や「素朴な癒し」を重視し、読書のような静寂を愛するインドア派トラベラーです。' },
-    FAVL: { name:'夜更かし演出家', tagline:'直感とトキメキで夜の旅を彩るタイプ',          desc:'その瞬間のトキメキとノリを信じて旅を進める、お洒落で気ままな自由人。気分が高まった瞬間に高級なディナーを予約したり、思いつきで絶景の見えるルーフトップバーへと繰り出します。夜の街のきらめきを自分流にデコレーションしていく楽しさを噛み締めます。' },
-    FAVS: { name:'映え放浪家',    tagline:'直感で最高の映えを逃さない天性のセンサー',    desc:'直感を頼りに「今いちばん綺麗な場所」へと軽やかに飛び回る、天性のセンスを持つタイプ。ガチガチの計画は苦手。天気が良いからと夕日を見に走り、SNSで見つけた美しい景色へとノリ良く旅路を変えます。等身大でありながら、抜群のおしゃれアンテナを持っています。' },
-    FAEL: { name:'自由探検家',    tagline:'好奇心のままに飛び込むハプニング大歓迎タイプ', desc:'予定調和が大嫌い。現地で心が動いた方向へ好奇心旺盛に飛び込んでいく直感重視のチャレンジャー。その場だからこそ出会えるハプニング的なプレミアム体験に飛びつきます。あなたの旅はいつもドラマチックで予測不能です。' },
-    FAES: { name:'気まぐれ開拓士', tagline:'身軽さと直感でローカルを開拓する冒険者タイプ', desc:'思い立った瞬間に身軽なリュック一つでローカル線に飛び乗るような、冒険小説の主人公タイプ。予算はリーズナブルに抑えつつ、直感的に面白いと感じた怪しい路地裏やユニークな現地文化に恐れず関わっていきます。' },
-    FCVL: { name:'月夜の漂流家',  tagline:'気ままにラグジュアリーを楽しむ大人の自由人',  desc:'気まぐれにラグジュアリーな過ごし方を自分流にカスタムする、気高きマイペーストラベラー。旅先で朝目覚めてから「今日はあの高級ホテルスパでまったりしよう」と決めたり、夜風を浴びながらリッチなカクテルを楽しんだり。縛られない自由と贅沢なご褒美を愛します。' },
-    FCVS: { name:'余白収集家',    tagline:'風の吹くままに余白を愛するノマドタイプ',      desc:'風の吹くままにふらりと歩き、ふと見つけたお洒落なカフェの窓辺で何時間も過ごすような、余白を愛するノマドタイプ。スケジュールを一切持たないという「究極の贅沢」をスマートに楽しんでいます。' },
-    FCEL: { name:'空気感旅行家',  tagline:'目に見えない空気感や情緒を味わうポエトリーな旅人', desc:'旅先の街角の匂い、流れる音楽、地元の人たちの笑い声など「目に見えない愛おしい空気感」を、感覚を開いて受け取るポエトリーな旅人。急いでどこかへ行く計画はせず、ただ波の音を聞きながら揺られているだけで心が満たされます。' },
-    FCES: { name:'風まかせ人',    tagline:'最もニュートラルで自然体な究極の旅人',       desc:'最もルールに縛られない、最もニュートラルで気張らないナチュラル旅人。予算をかけず、計画も立てず、ただ「そこに呼ばれたから来た」ような自然体極まるスタイルを愛します。素朴なベンチに座ってぼーっと風の音を聞いている時間が一番の癒やしです。' }
-  },
+personalities: {
+PAVL: { name:'旅演出家',      tagline:'旅全体の世界観を作り込むタイプ',             desc:'あなたが訪れる旅はすべて完璧にプロデュースされた一本の美しい映画。綿密なスケジューリングと最高級のホテル、息をのむような絶景を余すことなく楽しむカリスマです。最高の世界観と上質な空間を調和させるセンスはピカイチです。' },
+PAVS: { name:'景色収集家',    tagline:'絶景・映えスポットを賢くコレクションするタイプ', desc:'美しい光景を絶対に見逃さない、計画的でフットワークの軽いハントマスター。無駄のないルート計画で、話題の絶景スポットや旬な景色を抜群のタイパで集めて回ります。賢くコストを抑えながらも、写真映えのクオリティには一切の妥協なしです。' },
+PAEL: { name:'感性探訪家',    tagline:'土地の文化・アートに深くひたるタイプ',         desc:'旅先での出会いや伝統、文化体験にじっくりと時間をかける知的なオーガナイザー。旅行前の計画に余念がなく、その土地ならではのプレミアムな伝統体験や美食に惜しみなく自己投資します。体験を通して教養を豊かにしていく贅沢な旅がお似合いです。' },
+PAES: { name:'路地開拓士',    tagline:'まだ知られていない場所を計画的に開拓するタイプ', desc:'計画的かつ効率的に、知る人ぞ知る現地のローカル体験や本物の空気をハントする探検家。ガイドブックの奥深く、地元の人が愛する体験を求めてアクティブに足を運びます。誰も気づいていない「隠れ路地の名店」を開拓することに無上の喜びを感じるタイプです。' },
+PCVL: { name:'余白貴族',      tagline:'何もしない時間も旅の楽しみなエレガントタイプ', desc:'ラグジュアリーな時間が流れる高級ホテルや、美しいデザインに囲まれてゆったり流れるひとときを愛するエレガントな旅人。贅沢な空間をあえて「何もしない」で味わい尽くす大人な旅を好みます。上質なサービスに癒されるのが最大の幸福です。' },
+PCVS: { name:'カフェ漂流家',  tagline:'カフェや美術館をスマートに巡るカルチャーサーファー', desc:'お気に入りのブックカフェや静かな美術館を計画的に巡りながら、自分のペースで漂うことを好むアーティスト肌。スマートでおしゃれな空間に身を置き、時間を節約しながらも心豊かに街の美観をクリップしていきます。' },
+PCEL: { name:'癒し滞在家',    tagline:'最高の宿で心身をリセットするヒーリングタイプ', desc:'綿密なプランニングで最高の宿やリラクゼーション体験をリザーブし、極上の快適さにひたる旅のヒーラー。スパや温泉、プライベートな自然環境に囲まれながら、極上のおもてなしに身を委ねます。移動や慌ただしさは最小限に抑えるのが流儀です。' },
+PCES: { name:'静かな放浪家',  tagline:'静かなローカルの時間に没頭するインドア旅人', desc:'事前にしっかり安全な宿泊先や基本的な流れを設計した上で、旅先では静かにローカルな時間の移ろいに没頭する思索派。豪華さよりも「居心地の良さ」や「素朴な癒し」を重視し、読書のような静寂を愛するインドア派トラベラーです。' },
+FAVL: { name:'夜更かし演出家', tagline:'直感とトキメキで夜の旅を彩るタイプ',          desc:'その瞬間のトキメキとノリを信じて旅を進める、お洒落で気ままな自由人。気分が高まった瞬間に高級なディナーを予約したり、思いつきで絶景の見えるルーフトップバーへと繰り出します。夜の街のきらめきを自分流にデコレーションしていく楽しさを噛み締めます。' },
+FAVS: { name:'映え放浪家',    tagline:'直感で最高の映えを逃さない天性のセンサー',    desc:'直感を頼りに「今いちばん綺麗な場所」へと軽やかに飛び回る、天性のセンスを持つタイプ。ガチガチの計画は苦手。天気が良いからと夕日を見に走り、SNSで見つけた美しい景色へとノリ良く旅路を変えます。等身大でありながら、抜群のおしゃれアンテナを持っています。' },
+FAEL: { name:'自由探検家',    tagline:'好奇心のままに飛び込むハプニング大歓迎タイプ', desc:'予定調和が大嫌い。現地で心が動いた方向へ好奇心旺盛に飛び込んでいく直感重視のチャレンジャー。その場だからこそ出会えるハプニング的なプレミアム体験に飛びつきます。あなたの旅はいつもドラマチックで予測不能です。' },
+FAES: { name:'気まぐれ開拓士', tagline:'身軽さと直感でローカルを開拓する冒険者タイプ', desc:'思い立った瞬間に身軽なリュック一つでローカル線に飛び乗るような、冒険小説の主人公タイプ。予算はリーズナブルに抑えつつ、直感的に面白いと感じた怪しい路地裏やユニークな現地文化に恐れず関わっていきます。' },
+FCVL: { name:'月夜の漂流家',  tagline:'気ままにラグジュアリーを楽しむ大人の自由人',  desc:'気まぐれにラグジュアリーな過ごし方を自分流にカスタムする、気高きマイペーストラベラー。旅先で朝目覚めてから「今日はあの高級ホテルスパでまったりしよう」と決めたり、夜風を浴びながらリッチなカクテルを楽しんだり。縛られない自由と贅沢なご褒美を愛します。' },
+FCVS: { name:'余白収集家',    tagline:'風の吹くままに余白を愛するノマドタイプ',      desc:'風の吹くままにふらりと歩き、ふと見つけたお洒落なカフェの窓辺で何時間も過ごすような、余白を愛するノマドタイプ。スケジュールを一切持たないという「究極の贅沢」をスマートに楽しんでいます。' },
+FCEL: { name:'空気感旅行家',  tagline:'目に見えない空気感や情緒を味わうポエトリーな旅人', desc:'旅先の街角の匂い、流れる音楽、地元の人たちの笑い声など「目に見えない愛おしい空気感」を、感覚を開いて受け取るポエトリーな旅人。急いでどこかへ行く計画はせず、ただ波の音を聞きながら揺られているだけで心が満たされます。' },
+FCES: { name:'風まかせ人',    tagline:'最もニュートラルで自然体な究極の旅人',       desc:'最もルールに縛られない、最もニュートラルで気張らないナチュラル旅人。予算をかけず、計画も立てず、ただ「そこに呼ばれたから来た」ような自然体極まるスタイルを愛します。素朴なベンチに座ってぼーっと風の音を聞いている時間が一番の癒やしです。' }
+},
 
-  getPersonalityByName(name) {
-    return Object.values(this.personalities).find(p => p.name === name) || null;
-  },
+getPersonalityByName(name) {
+return Object.values(this.personalities).find(p => [p.name](http://p.name/) === name) || null;
+},
 
-  getDayBg(dayNum) {
-    const bgs = [
-      'rgba(232, 242, 255, 0.82)',
-      'rgba(255, 244, 232, 0.82)',
-      'rgba(232, 255, 242, 0.82)',
-      'rgba(248, 232, 255, 0.82)',
-      'rgba(255, 248, 232, 0.82)'
-    ];
-    return bgs[(dayNum - 1) % bgs.length];
-  }
+getDayBg(dayNum) {
+const bgs = [
+'rgba(232, 242, 255, 0.82)',
+'rgba(255, 244, 232, 0.82)',
+'rgba(232, 255, 242, 0.82)',
+'rgba(248, 232, 255, 0.82)',
+'rgba(255, 248, 232, 0.82)'
+];
+return bgs[(dayNum - 1) % bgs.length];
+}
 };
 
-/* ────────────────────────────────────────────────────────────────
-   2. linkGenerator
+function displayResult(resultData) {
+
+document.getElementById('result-code').innerText = resultData.code;
+
+const resultImg = document.getElementById('result-img');
+const fallback = document.getElementById('result-img-fallback');
+
+// resultData.code が "PAVL" なら "pavl.png" を読み込む
+resultImg.src = `${resultData.code.toLowerCase()}.png``;
+resultImg.style.display = 'block';
+
+// 画像読み込み成功時：準備中を隠す
+resultImg.onload = () => {
+fallback.style.display = 'none';
+};
+
+// 画像読み込み失敗時：準備中を表示したままにする
+resultImg.onerror = () => {
+resultImg.style.display = 'none';
+fallback.style.display = 'flex';
+};
+
+document.getElementById('result-view').style.display = 'block';
+}
+
+────────────────────────────────────────────────────────────────
+2. linkGenerator
 ──────────────────────────────────────────────────────────────── */
 const linkGenerator = {
-  maps(place, area) {
-    const q = (area && !place.includes(area)) ? `${place} ${area}` : place;
-    return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(q)}`;
-  },
-  instagram(place) {
-    return `https://www.google.com/search?q=${encodeURIComponent(place + ' Instagram')}`;
-  },
-  tabelog(place) {
-    return `https://www.google.com/search?q=${encodeURIComponent(place + ' 食べログ')}`;
-  }
+maps(place, area) {
+const q = (area && !place.includes(area)) ? `${place} ${area}` : place;
+return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(q)}`;
+},
+instagram(place) {
+return `https://www.google.com/search?q=${encodeURIComponent(place + ' Instagram')}`;
+},
+tabelog(place) {
+return `https://www.google.com/search?q=${encodeURIComponent(place + ' 食べログ')}`;
+}
 };
 
 /* ────────────────────────────────────────────────────────────────
-   3. diagnosis
+3. diagnosis
 ──────────────────────────────────────────────────────────────── */
 const diagnosis = {
 
-  questions: [
-    // ── P / F axis ──────────────────────────────────────────
-    { id:1,  text:'旅行前、GoogleMapの保存がどんどん増えていく',                           axis:'P', rev:false },
-    { id:2,  text:'その場で決まる予定変更はむしろワクワクして楽しい',                     axis:'P', rev:true  },
-    { id:3,  text:'何をするか決まっていない時間があると、実は少し不安...',               axis:'P', rev:false },
-    { id:4,  text:'あえて下調べせず、現地で偶然見つけた惹かれるお店に飛び込みたい',     axis:'P', rev:true  },
-    { id:5,  text:'電車の乗り換えや移動時間まで細かく計算して予定を組む',               axis:'P', rev:false },
-    { id:6,  text:'目的地を決めず「とりあえず歩く」時間が一番好きだったりする',         axis:'P', rev:true  },
-    { id:7,  text:'人気店の予約が事前にしっかり取れていないと落ち着かない',             axis:'P', rev:false },
-    { id:8,  text:'「旅行は予定通りに進まないもの」と最初から割り切っている',           axis:'P', rev:true  },
-    // ── A / C axis ──────────────────────────────────────────
-    { id:9,  text:'せっかく行くなら、朝から予定をぎっしり詰め込みたい',                 axis:'A', rev:false },
-    { id:10, text:'何もしないでボーッとする「カフェ休憩」の時間が旅の最重要項目だ',     axis:'A', rev:true  },
-    { id:11, text:'「せっかくここまで来たんだから！」と欲張って予定を増やしがち',       axis:'A', rev:false },
-    { id:12, text:'観光よりも、宿のベッドやお風呂でのんびりチャージする時間が必要だ',   axis:'A', rev:true  },
-    { id:13, text:'一日の中に複数のエリアや観光スポットをどんどん回りたい',             axis:'A', rev:false },
-    { id:14, text:'正直なところ、観光中の移動や人混みだけで疲れ果ててしまいやすい',     axis:'A', rev:true  },
-    { id:15, text:'歩きすぎてヘトヘトになっても、夜遅くまで動き回れるタフさがある',     axis:'A', rev:false },
-    { id:16, text:'予定はあえてスカスカにして、旅先での「ゆとり時間」を大事に残したい', axis:'A', rev:true  },
-    // ── V / E axis ──────────────────────────────────────────
-    { id:17, text:'心奪われる美しい景色やおしゃれな空間を見ると、反射的にカメラを構える', axis:'V', rev:false },
-    { id:18, text:'定番の有名観光スポットより、地元民にまぎれる空気感のほうが心惹かれる', axis:'V', rev:true  },
-    { id:19, text:'気づけば旅先から戻ったスマホのカメラフォルダがとんでもない枚数になる',  axis:'V', rev:false },
-    { id:20, text:'SNSで「映えるか」よりも、自分のリアルな感覚が「楽しいか」を優先したい', axis:'V', rev:true  },
-    { id:21, text:'世界観が洗練されたおしゃれなカフェやホテルを熱心に探してしまう',       axis:'V', rev:false },
-    { id:22, text:'お世辞にも綺麗とは言えないけれど、味のある「ローカル食堂」にワクワクする', axis:'V', rev:true },
-    { id:23, text:'一緒にいる人を待たせてでも、完璧な写真を撮るために立ち止まってしまう', axis:'V', rev:false },
-    { id:24, text:'観光パンフレットに載る名所に行くより、ただその街を歩くだけで満たされる', axis:'V', rev:true  },
-    // ── L / S axis ──────────────────────────────────────────
-    { id:25, text:'旅行のクオリティを左右する「宿（宿泊）」にはお財布を気にせず投資したい', axis:'L', rev:false },
-    { id:26, text:'移動費や交通機関にお金をかけるのはもったいない。できるだけ安く抑えたい', axis:'L', rev:true  },
-    { id:27, text:'メニューを見ながら「せっかくの旅行なら、一番良い店に行こう」が口癖だ', axis:'L', rev:false  },
-    { id:28, text:'高くて有名なお店より、コスパ最強な地元の「隠れた穴場」を探すのが得意だ', axis:'L', rev:true },
-    { id:29, text:'旅先で足が疲れたら、ためらわずにタクシーを使う心の余裕がある',          axis:'L', rev:false },
-    { id:30, text:'旅費をどれだけお得に安く抑えて攻略できたか、にゲーム感覚の喜びを感じる', axis:'L', rev:true },
-    { id:31, text:'普段頑張っている自分へのおもてなしとして、旅先では多少の贅沢を許したい', axis:'L', rev:false },
-    { id:32, text:'少し工夫してお得に節約ができると、なんだか密かに嬉しくなる',             axis:'L', rev:true  }
-  ],
+questions: [
+// ── P / F axis ──────────────────────────────────────────
+{ id:1,  text:'旅行前、GoogleMapの保存がどんどん増えていく',                           axis:'P', rev:false },
+{ id:2,  text:'その場で決まる予定変更はむしろワクワクして楽しい',                     axis:'P', rev:true  },
+{ id:3,  text:'何をするか決まっていない時間があると、実は少し不安...',               axis:'P', rev:false },
+{ id:4,  text:'あえて下調べせず、現地で偶然見つけた惹かれるお店に飛び込みたい',     axis:'P', rev:true  },
+{ id:5,  text:'電車の乗り換えや移動時間まで細かく計算して予定を組む',               axis:'P', rev:false },
+{ id:6,  text:'目的地を決めず「とりあえず歩く」時間が一番好きだったりする',         axis:'P', rev:true  },
+{ id:7,  text:'人気店の予約が事前にしっかり取れていないと落ち着かない',             axis:'P', rev:false },
+{ id:8,  text:'「旅行は予定通りに進まないもの」と最初から割り切っている',           axis:'P', rev:true  },
+// ── A / C axis ──────────────────────────────────────────
+{ id:9,  text:'せっかく行くなら、朝から予定をぎっしり詰め込みたい',                 axis:'A', rev:false },
+{ id:10, text:'何もしないでボーッとする「カフェ休憩」の時間が旅の最重要項目だ',     axis:'A', rev:true  },
+{ id:11, text:'「せっかくここまで来たんだから！」と欲張って予定を増やしがち',       axis:'A', rev:false },
+{ id:12, text:'観光よりも、宿のベッドやお風呂でのんびりチャージする時間が必要だ',   axis:'A', rev:true  },
+{ id:13, text:'一日の中に複数のエリアや観光スポットをどんどん回りたい',             axis:'A', rev:false },
+{ id:14, text:'正直なところ、観光中の移動や人混みだけで疲れ果ててしまいやすい',     axis:'A', rev:true  },
+{ id:15, text:'歩きすぎてヘトヘトになっても、夜遅くまで動き回れるタフさがある',     axis:'A', rev:false },
+{ id:16, text:'予定はあえてスカスカにして、旅先での「ゆとり時間」を大事に残したい', axis:'A', rev:true  },
+// ── V / E axis ──────────────────────────────────────────
+{ id:17, text:'心奪われる美しい景色やおしゃれな空間を見ると、反射的にカメラを構える', axis:'V', rev:false },
+{ id:18, text:'定番の有名観光スポットより、地元民にまぎれる空気感のほうが心惹かれる', axis:'V', rev:true  },
+{ id:19, text:'気づけば旅先から戻ったスマホのカメラフォルダがとんでもない枚数になる',  axis:'V', rev:false },
+{ id:20, text:'SNSで「映えるか」よりも、自分のリアルな感覚が「楽しいか」を優先したい', axis:'V', rev:true  },
+{ id:21, text:'世界観が洗練されたおしゃれなカフェやホテルを熱心に探してしまう',       axis:'V', rev:false },
+{ id:22, text:'お世辞にも綺麗とは言えないけれど、味のある「ローカル食堂」にワクワクする', axis:'V', rev:true },
+{ id:23, text:'一緒にいる人を待たせてでも、完璧な写真を撮るために立ち止まってしまう', axis:'V', rev:false },
+{ id:24, text:'観光パンフレットに載る名所に行くより、ただその街を歩くだけで満たされる', axis:'V', rev:true  },
+// ── L / S axis ──────────────────────────────────────────
+{ id:25, text:'旅行のクオリティを左右する「宿（宿泊）」にはお財布を気にせず投資したい', axis:'L', rev:false },
+{ id:26, text:'移動費や交通機関にお金をかけるのはもったいない。できるだけ安く抑えたい', axis:'L', rev:true  },
+{ id:27, text:'メニューを見ながら「せっかくの旅行なら、一番良い店に行こう」が口癖だ', axis:'L', rev:false  },
+{ id:28, text:'高くて有名なお店より、コスパ最強な地元の「隠れた穴場」を探すのが得意だ', axis:'L', rev:true },
+{ id:29, text:'旅先で足が疲れたら、ためらわずにタクシーを使う心の余裕がある',          axis:'L', rev:false },
+{ id:30, text:'旅費をどれだけお得に安く抑えて攻略できたか、にゲーム感覚の喜びを感じる', axis:'L', rev:true },
+{ id:31, text:'普段頑張っている自分へのおもてなしとして、旅先では多少の贅沢を許したい', axis:'L', rev:false },
+{ id:32, text:'少し工夫してお得に節約ができると、なんだか密かに嬉しくなる',             axis:'L', rev:true  }
+],
 
-  init() {
-    const container = document.getElementById('questions-container');
-    if (!container) return;
-    container.innerHTML = '';
-    const labels = ['そう思う', 'ややそう', 'どちらでも', 'あまり', '思わない'];
-    this.questions.forEach((q, i) => {
-      const card = document.createElement('div');
-      card.className = 'q-card';
-      card.id = `qcard-${q.id}`;
-      card.innerHTML = `
-        <span class="q-num">Q${String(i + 1).padStart(2, '0')}</span>
-        <p class="q-text">${q.text}</p>
-        <div class="q-options">
-          ${[5, 4, 3, 2, 1].map((v, idx) => `
-            <label class="opt-label">
-              <input type="radio" name="q${q.id}" value="${v}" class="opt-radio">
-              <div class="opt-circle"></div>
-              <span class="opt-mini">${labels[idx]}</span>
-            </label>
-          `).join('')}
-        </div>
-      `;
-      container.appendChild(card);
-    });
+init() {
+const container = document.getElementById('questions-container');
+if (!container) return;
+container.innerHTML = '';
+const labels = ['そう思う', 'ややそう', 'どちらでも', 'あまり', '思わない'];
+this.questions.forEach((q, i) => {
+const card = document.createElement('div');
+card.className = 'q-card';
+[card.id](http://card.id/) = `qcard-${q.id}`;
+card.innerHTML =         `<span class="q-num">Q${String(i + 1).padStart(2, '0')}</span>         <p class="q-text">${q.text}</p>         <div class="q-options">           ${[5, 4, 3, 2, 1].map((v, idx) =>`
+<label class="opt-label">
+<input type="radio" name="q${[q.id](http://q.id/)}" value="${v}" class="opt-radio">
+<div class="opt-circle"></div>
+<span class="opt-mini">${labels[idx]}</span>
+</label>
+`).join('')}         </div>`       ;
+container.appendChild(card);
+});
 
-    // Remove error highlight on answer
-    container.addEventListener('change', e => {
-      const name = e.target.name;
-      if (!name) return;
-      const id = name.replace('q', '');
-      const card = document.getElementById(`qcard-${id}`);
-      if (card) card.classList.remove('error');
-    });
-  },
+```
+// Remove error highlight on answer
+container.addEventListener('change', e => {
+  const name = e.target.name;
+  if (!name) return;
+  const id = name.replace('q', '');
+  const card = document.getElementById(`qcard-${id}`);
+  if (card) card.classList.remove('error');
+});
+```
 
-  calculate(form) {
-    const scores = { P: 0, A: 0, V: 0, L: 0 };
-    for (const q of this.questions) {
-      const el = form.querySelector(`input[name="q${q.id}"]:checked`);
-      if (!el) return null;
-      let val = parseInt(el.value, 10);
-      if (q.rev) val = 6 - val;
-      scores[q.axis] += val;
-    }
-    return scores;
-  },
+},
 
-  getCode(scores) {
-    const th = 24;
-    return (scores.P >= th ? 'P' : 'F') +
-           (scores.A >= th ? 'A' : 'C') +
-           (scores.V >= th ? 'V' : 'E') +
-           (scores.L >= th ? 'L' : 'S');
-  },
+calculate(form) {
+const scores = { P: 0, A: 0, V: 0, L: 0 };
+for (const q of this.questions) {
+const el = form.querySelector(`input[name="q${q.id}"]:checked`);
+if (!el) return null;
+let val = parseInt(el.value, 10);
+if (q.rev) val = 6 - val;
+scores[q.axis] += val;
+}
+return scores;
+},
 
-  submit(form) {
-    const unanswered = this.questions.filter(q =>
-      !form.querySelector(`input[name="q${q.id}"]:checked`)
-    );
-    document.querySelectorAll('.q-card').forEach(c => c.classList.remove('error'));
+getCode(scores) {
+const th = 24;
+return (scores.P >= th ? 'P' : 'F') +
+(scores.A >= th ? 'A' : 'C') +
+(scores.V >= th ? 'V' : 'E') +
+(scores.L >= th ? 'L' : 'S');
+},
 
-    if (unanswered.length > 0) {
-      unanswered.forEach(q => {
-        document.getElementById(`qcard-${q.id}`)?.classList.add('error');
-      });
-      document.getElementById(`qcard-${unanswered[0].id}`)
-        ?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+submit(form) {
+const unanswered = this.questions.filter(q =>
+!form.querySelector(`input[name="q${q.id}"]:checked`)
+);
+document.querySelectorAll('.q-card').forEach(c => c.classList.remove('error'));
 
-      const nums = unanswered.map(q => {
-        const idx = this.questions.findIndex(x => x.id === q.id);
-        return `${idx + 1}問目`;
-      });
-      const err = document.getElementById('quiz-error');
-      err.textContent = `${nums.join('、')} が未回答です。`;
-      err.style.display = 'block';
-      return;
-    }
-    document.getElementById('quiz-error').style.display = 'none';
+```
+if (unanswered.length > 0) {
+  unanswered.forEach(q => {
+    document.getElementById(`qcard-${q.id}`)?.classList.add('error');
+  });
+  document.getElementById(`qcard-${unanswered[0].id}`)
+    ?.scrollIntoView({ behavior: 'smooth', block: 'center' });
 
-    const scores = this.calculate(form);
-    const code = this.getCode(scores);
-    const persona = themeManager.personalities[code];
+  const nums = unanswered.map(q => {
+    const idx = this.questions.findIndex(x => x.id === q.id);
+    return `${idx + 1}問目`;
+  });
+  const err = document.getElementById('quiz-error');
+  err.textContent = `${nums.join('、')} が未回答です。`;
+  err.style.display = 'block';
+  return;
+}
+document.getElementById('quiz-error').style.display = 'none';
 
-    AppState.diagnosisResult = { code, ...persona };
+const scores = this.calculate(form);
+const code = this.getCode(scores);
+const persona = themeManager.personalities[code];
 
-    // Auto-fill prompt tab personality selector
-    const sel = document.getElementById('my-personality');
-    if (sel && persona) sel.value = persona.name;
+AppState.diagnosisResult = { code, ...persona };
 
-    this._showResult(code, persona, scores);
-  },
+// Auto-fill prompt tab personality selector
+const sel = document.getElementById('my-personality');
+if (sel && persona) sel.value = persona.name;
 
-  _showResult(code, persona, scores) {
-    const view = document.getElementById('result-view');
-    const img = document.getElementById('result-img');
-    const fallback = document.getElementById('result-img-fallback');
+this._showResult(code, persona, scores);
+```
 
-    img.style.display = 'none';
-    fallback.style.display = 'flex';
-    img.src = `images/${code.toLowerCase()}.png`;
+},
 
-    document.getElementById('result-code').textContent = code;
-    document.getElementById('result-name').textContent = persona?.name ?? code;
-    document.getElementById('result-tagline').textContent = persona ? `「${persona.tagline}」` : '';
-    document.getElementById('result-desc').textContent = persona?.desc ?? '';
+_showResult(code, persona, scores) {
+const view = document.getElementById('result-view');
+const img = document.getElementById('result-img');
+const fallback = document.getElementById('result-img-fallback');
 
-    view.style.display = 'block';
+```
+img.style.display = 'none';
+fallback.style.display = 'flex';
+img.src = `images/${code.toLowerCase()}.png`;
 
-    const pct = s => Math.max(0, Math.min(100, Math.round(((s - 8) / 32) * 100)));
-    setTimeout(() => {
-      document.getElementById('bar-PF').style.width = `${100 - pct(scores.P)}%`;
-      document.getElementById('bar-AC').style.width = `${100 - pct(scores.A)}%`;
-      document.getElementById('bar-VE').style.width = `${100 - pct(scores.V)}%`;
-      document.getElementById('bar-LS').style.width = `${100 - pct(scores.L)}%`;
-    }, 120);
+document.getElementById('result-code').textContent = code;
+document.getElementById('result-name').textContent = persona?.name ?? code;
+document.getElementById('result-tagline').textContent = persona ? `「${persona.tagline}」` : '';
+document.getElementById('result-desc').textContent = persona?.desc ?? '';
 
-    view.scrollIntoView({ behavior: 'smooth', block: 'start' });
-  },
+view.style.display = 'block';
 
-  reset(form) {
-    form.reset();
-    document.querySelectorAll('.q-card').forEach(c => c.classList.remove('error'));
-    document.getElementById('quiz-error').style.display = 'none';
-    document.getElementById('result-view').style.display = 'none';
-    document.getElementById('result-img').src = '';
-    AppState.diagnosisResult = null;
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  }
+const pct = s => Math.max(0, Math.min(100, Math.round(((s - 8) / 32) * 100)));
+setTimeout(() => {
+  document.getElementById('bar-PF').style.width = `${100 - pct(scores.P)}%`;
+  document.getElementById('bar-AC').style.width = `${100 - pct(scores.A)}%`;
+  document.getElementById('bar-VE').style.width = `${100 - pct(scores.V)}%`;
+  document.getElementById('bar-LS').style.width = `${100 - pct(scores.L)}%`;
+}, 120);
+
+view.scrollIntoView({ behavior: 'smooth', block: 'start' });
+```
+
+},
+
+reset(form) {
+form.reset();
+document.querySelectorAll('.q-card').forEach(c => c.classList.remove('error'));
+document.getElementById('quiz-error').style.display = 'none';
+document.getElementById('result-view').style.display = 'none';
+document.getElementById('result-img').src = '';
+AppState.diagnosisResult = null;
+window.scrollTo({ top: 0, behavior: 'smooth' });
+}
 };
 
 /* ────────────────────────────────────────────────────────────────
-   4. promptGenerator
+4. promptGenerator
 ──────────────────────────────────────────────────────────────── */
 const promptGenerator = {
 
-  personalityDescs: {
-    '旅演出家':    '旅行を完璧にコーディネートし、洗練されたおもてなし空間と最高の世界観を体験したいプロデューサー気質のタイプ',
-    '景色収集家':  '綿密なプランを立て、話題の映えるスポットや旬な絶景を効率よく収めて回りたいタイパ重視のハンタータイプ',
-    '感性探訪家':  '事前にしっかり下調べをしたうえで、その土地ならではの本物の文化・アート・体験にじっくり浸りたいタイプ',
-    '路地開拓士':  '効率的な計画を組みつつ、定番観光地よりも現地のローカルな路地裏やリアルな体験を開拓したいタイプ',
-    '余白貴族':    '贅沢なホテルや宿を予約し、その洗練された最高級の空間の中で「あえて何もしない余白」を楽しむエレガントなタイプ',
-    'カフェ漂流家': '大好きな世界観のカフェや美術館をスマートに下調べし、そこに佇んで自分のペースを最優先して楽しむカルチャー重視のタイプ',
-    '癒し滞在家':  '最高の温泉宿やリゾート・スパをあらかじめ予約し、移動を極力減らしてただ宿のおもてなしと癒しの空気に没頭したいヒーリングタイプ',
-    '静かな放浪家': 'あらかじめ安全な土台は確保しつつ、旅先では静かで素朴なローカルの時間と静寂に浸る知的なインドアタイプ',
-    '夜更かし演出家': '型にはまったスケジュールを嫌い、その瞬間のトキメキや深夜のきらめく景色などエモーショナルな瞬間を直感でカスタムするタイプ',
-    '映え放浪家':  '計画に縛られず、その瞬間のフィーリングに合わせて「いま一番フォトジェニックな場所」へノリよく移動するセンス重視タイプ',
-    '自由探検家':  '予測不能なハプニングや、その場でしか出会えないプレミアムな体験・アドベンチャーに直感で飛び込んでいく熱量の高いタイプ',
-    '気まぐれ開拓士': '身軽さと直感を武器に、ローカル線に乗ったりディープな大衆食堂の扉を開けたりしながら本物の現地体験を開拓する気まぐれな冒険者タイプ',
-    '月夜の漂流家': '一切縛られない気ままな自由を楽しみつつ、その日の気分で極上のリラクゼーションや贅沢なカクテルを楽しむ大人の自由人タイプ',
-    '余白収集家':  '何ひとつスケジュールを持たずにふらりと街に出て、出会ったおしゃれなカフェで風を感じながらのんびりと余白をクリップするタイプ',
-    '空気感旅行家': '美しい宿泊先だけは確保しつつ、予定を一切作らずに地元の何気ない街の音・香り・おもてなしなど情緒的な空気をゆったり吸い込むタイプ',
-    '風まかせ人':  '予算も計画も全く決めず、観光地化された場所を避け、ただのんびりと素朴なローカルの時間と同化する究極に自然体なタイプ'
-  },
+personalityDescs: {
+'旅演出家':    '旅行を完璧にコーディネートし、洗練されたおもてなし空間と最高の世界観を体験したいプロデューサー気質のタイプ',
+'景色収集家':  '綿密なプランを立て、話題の映えるスポットや旬な絶景を効率よく収めて回りたいタイパ重視のハンタータイプ',
+'感性探訪家':  '事前にしっかり下調べをしたうえで、その土地ならではの本物の文化・アート・体験にじっくり浸りたいタイプ',
+'路地開拓士':  '効率的な計画を組みつつ、定番観光地よりも現地のローカルな路地裏やリアルな体験を開拓したいタイプ',
+'余白貴族':    '贅沢なホテルや宿を予約し、その洗練された最高級の空間の中で「あえて何もしない余白」を楽しむエレガントなタイプ',
+'カフェ漂流家': '大好きな世界観のカフェや美術館をスマートに下調べし、そこに佇んで自分のペースを最優先して楽しむカルチャー重視のタイプ',
+'癒し滞在家':  '最高の温泉宿やリゾート・スパをあらかじめ予約し、移動を極力減らしてただ宿のおもてなしと癒しの空気に没頭したいヒーリングタイプ',
+'静かな放浪家': 'あらかじめ安全な土台は確保しつつ、旅先では静かで素朴なローカルの時間と静寂に浸る知的なインドアタイプ',
+'夜更かし演出家': '型にはまったスケジュールを嫌い、その瞬間のトキメキや深夜のきらめく景色などエモーショナルな瞬間を直感でカスタムするタイプ',
+'映え放浪家':  '計画に縛られず、その瞬間のフィーリングに合わせて「いま一番フォトジェニックな場所」へノリよく移動するセンス重視タイプ',
+'自由探検家':  '予測不能なハプニングや、その場でしか出会えないプレミアムな体験・アドベンチャーに直感で飛び込んでいく熱量の高いタイプ',
+'気まぐれ開拓士': '身軽さと直感を武器に、ローカル線に乗ったりディープな大衆食堂の扉を開けたりしながら本物の現地体験を開拓する気まぐれな冒険者タイプ',
+'月夜の漂流家': '一切縛られない気ままな自由を楽しみつつ、その日の気分で極上のリラクゼーションや贅沢なカクテルを楽しむ大人の自由人タイプ',
+'余白収集家':  '何ひとつスケジュールを持たずにふらりと街に出て、出会ったおしゃれなカフェで風を感じながらのんびりと余白をクリップするタイプ',
+'空気感旅行家': '美しい宿泊先だけは確保しつつ、予定を一切作らずに地元の何気ない街の音・香り・おもてなしなど情緒的な空気をゆったり吸い込むタイプ',
+'風まかせ人':  '予算も計画も全く決めず、観光地化された場所を避け、ただのんびりと素朴なローカルの時間と同化する究極に自然体なタイプ'
+},
 
-  _fmtDT(dtStr) {
-    if (!dtStr) return '';
-    const d = new Date(dtStr);
-    const p = n => String(n).padStart(2, '0');
-    return `${d.getFullYear()}-${p(d.getMonth()+1)}-${p(d.getDate())} ${p(d.getHours())}:${p(d.getMinutes())}`;
-  },
+_fmtDT(dtStr) {
+if (!dtStr) return '';
+const d = new Date(dtStr);
+const p = n => String(n).padStart(2, '0');
+return `${d.getFullYear()}-${p(d.getMonth()+1)}-${p(d.getDate())} ${p(d.getHours())}:${p(d.getMinutes())}`;
+},
 
-  _timeOnly(dtStr) {
-    if (!dtStr) return '';
-    const d = new Date(dtStr);
-    const p = n => String(n).padStart(2, '0');
-    return `${p(d.getHours())}:${p(d.getMinutes())}`;
-  },
+_timeOnly(dtStr) {
+if (!dtStr) return '';
+const d = new Date(dtStr);
+const p = n => String(n).padStart(2, '0');
+return `${p(d.getHours())}:${p(d.getMinutes())}`;
+},
 
-  _checked(selector) {
-    return Array.from(document.querySelectorAll(`${selector}:checked`)).map(el => el.value);
-  },
+_checked(selector) {
+return Array.from(document.querySelectorAll(`${selector}:checked`)).map(el => el.value);
+},
 
-  submit(form) {
-    const myPersona    = document.getElementById('my-personality').value;
-    const destination  = document.getElementById('destination').value.trim();
-    const arrDt        = document.getElementById('arrival-dt').value;
-    const depDt        = document.getElementById('departure-dt').value;
-    const duration     = document.getElementById('duration').value;
-    const members      = document.getElementById('members').value;
-    const companion    = form.querySelector('input[name="companion"]:checked')?.value;
-    const partnerPers  = document.getElementById('partner-personality').value;
-    const budget       = document.getElementById('budget').value;
-    const transport    = document.getElementById('transport').value;
-    const fatigue      = form.querySelector('input[name="fatigue"]:checked')?.value;
-    const eat          = form.querySelector('input[name="eat"]:checked')?.value;
-    const photo        = form.querySelector('input[name="photo"]:checked')?.value;
-    const themes       = this._checked('#th-heal, #th-fun, #th-eat, #th-photo, #th-nature, #th-luxury, #th-special');
-    const avoids       = this._checked('#av-q, #av-cr, #av-er, #av-ti, #av-lm, #av-op');
-    const hotels       = this._checked('#ht-sl, #ht-sa, #ht-vw, #ht-ph, #ht-on, #ht-lc');
+submit(form) {
+const myPersona    = document.getElementById('my-personality').value;
+const destination  = document.getElementById('destination').value.trim();
+const arrDt        = document.getElementById('arrival-dt').value;
+const depDt        = document.getElementById('departure-dt').value;
+const duration     = document.getElementById('duration').value;
+const members      = document.getElementById('members').value;
+const companion    = form.querySelector('input[name="companion"]:checked')?.value;
+const partnerPers  = document.getElementById('partner-personality').value;
+const budget       = document.getElementById('budget').value;
+const transport    = document.getElementById('transport').value;
+const fatigue      = form.querySelector('input[name="fatigue"]:checked')?.value;
+const eat          = form.querySelector('input[name="eat"]:checked')?.value;
+const photo        = form.querySelector('input[name="photo"]:checked')?.value;
+const themes       = this._checked('#th-heal, #th-fun, #th-eat, #th-photo, #th-nature, #th-luxury, #th-special');
+const avoids       = this._checked('#av-q, #av-cr, #av-er, #av-ti, #av-lm, #av-op');
+const hotels       = this._checked('#ht-sl, #ht-sa, #ht-vw, #ht-ph, #ht-on, #ht-lc');
 
-    const errEl = document.getElementById('prompt-error');
-    if (!myPersona || !destination || !arrDt || !depDt || !duration || !budget || !transport) {
-      errEl.textContent = '必須項目（*）をすべて入力・選択してください。';
-      errEl.style.display = 'block';
-      return;
-    }
-    if (new Date(arrDt) >= new Date(depDt)) {
-      errEl.textContent = '出発日時は到着日時より後に設定してください。';
-      errEl.style.display = 'block';
-      return;
-    }
-    errEl.style.display = 'none';
+```
+const errEl = document.getElementById('prompt-error');
+if (!myPersona || !destination || !arrDt || !depDt || !duration || !budget || !transport) {
+  errEl.textContent = '必須項目（*）をすべて入力・選択してください。';
+  errEl.style.display = 'block';
+  return;
+}
+if (new Date(arrDt) >= new Date(depDt)) {
+  errEl.textContent = '出発日時は到着日時より後に設定してください。';
+  errEl.style.display = 'block';
+  return;
+}
+errEl.style.display = 'none';
 
-    // Save destination for shiori
-    AppState.destination = destination;
-    sessionStorage.setItem('tabios_destination', destination);
+// Save destination for shiori
+AppState.destination = destination;
+sessionStorage.setItem('tabios_destination', destination);
 
-    const myDesc = this.personalityDescs[myPersona] || '';
-    const partnerDesc = partnerPers
-      ? `${partnerPers}（${this.personalityDescs[partnerPers] || '特性を大切にした旅の仲間'}）`
-      : '指定なし（AIにおまかせ）';
-    const arrTime = this._timeOnly(arrDt);
-    const depTime = this._timeOnly(depDt);
+const myDesc = this.personalityDescs[myPersona] || '';
+const partnerDesc = partnerPers
+  ? `${partnerPers}（${this.personalityDescs[partnerPers] || '特性を大切にした旅の仲間'}）`
+  : '指定なし（AIにおまかせ）';
+const arrTime = this._timeOnly(arrDt);
+const depTime = this._timeOnly(depDt);
 
-    const prompt = `あなたは、旅の「世界観」や「人間の情緒・価値観」を深く理解し、型通りの観光地巡りではない最高の旅をデザインしてくれる『一流の旅コンシェルジュ』です。
+const prompt = `あなたは、旅の「世界観」や「人間の情緒・価値観」を深く理解し、型通りの観光地巡りではない最高の旅をデザインしてくれる『一流の旅コンシェルジュ』です。
+```
 
 私たちの価値観やコンディションに寄り添った、最高に愛おしい旅行プランを提案してください。
 
 ーーー
 
 ### 🕊️ 旅のキャスト
-* **私の旅キャラクター**: 「${myPersona}」です。私は普段、${myDesc}を大切にしています。
-* **同行者**: ${companion === '一人旅' ? '今回は「一人旅」をします。' : `今回は「${companion}」と「${members}名」で旅に出ます。`}
-${companion !== '一人旅' ? `* **同行者の旅役職**: ${partnerDesc}` : ''}
+
+- **私の旅キャラクター**: 「${myPersona}」です。私は普段、${myDesc}を大切にしています。
+- **同行者**: ${companion === '一人旅' ? '今回は「一人旅」をします。' : `今回は「${companion}」と「${members}名」で旅に出ます。`}
+${companion !== '一人旅' ? `**同行者の旅役職**: ${partnerDesc}` : ''}
 
 ### 🗺️ 旅の輪郭
-* **行き先**: ${destination}
-* **日程**: ${duration}
-* **1人あたり予算**: ${budget}程度
-* **主な移動手段**: ${transport}
-* **到着日時**: ${this._fmtDT(arrDt)}（初日は${arrTime}以降から行動可能）
-* **出発日時**: ${this._fmtDT(depDt)}（最終日は${depTime}までに帰路へ）
+
+- **行き先**: ${destination}
+- **日程**: ${duration}
+- **1人あたり予算**: ${budget}程度
+- **主な移動手段**: ${transport}
+- **到着日時**: ${this._fmtDT(arrDt)}（初日は${arrTime}以降から行動可能）
+- **出発日時**: ${this._fmtDT(depDt)}（最終日は${depTime}までに帰路へ）
 
 ### 🌿 今回の旅に求めること
+
 ${themes.length > 0 ? `* **旅のテーマ**: 「${themes.join('、')}」を大事にしたいです。` : '* **旅のテーマ**: 心と感性が喜ぶような体験を楽しみたいです。'}
-* **体力ペース**: 「${fatigue}」というペースで進みたいです。
-* **食事へのこだわり**: 「${eat}」という思いがあります。
-* **写真の距離感**: 「${photo}」という気持ちを大切にさせてください。
-${hotels.length > 0 ? `* **宿へのこだわり**: ${hotels.join('、')}を重視した宿泊先を提案してください。` : ''}
+
+- **体力ペース**: 「${fatigue}」というペースで進みたいです。
+- **食事へのこだわり**: 「${eat}」という思いがあります。
+- **写真の距離感**: 「${photo}」という気持ちを大切にさせてください。
+${hotels.length > 0 ? `**宿へのこだわり**: ${hotels.join('、')}を重視した宿泊先を提案してください。` : ''}
 
 ### 🚫 避けたいこと
+
 ${avoids.length > 0 ? `* 「${avoids.join('、')}」を完全に排除できる動線でお願いします。` : '* 心地よい時間の余白を重視してください。'}
 
 ーーー
 
 ### 🎯 プランニング指示
-* 初日の行動開始時間（${arrTime}）と最終日の帰路デッドライン（${depTime}）を厳守すること。
-* 現地の実際の位置関係に基づき、逆戻りのないスムーズな移動導線にすること。
-* 体力ペースを最優先し、詰め込みすぎないゆとりのあるスケジュールにすること。
-* 実際の営業時間・定休日を考慮し、移動時間はバッファ込みで設計すること。
-* 天候変化に備えた「雨天代替案」を適宜織り交ぜること。
+
+- 初日の行動開始時間（${arrTime}）と最終日の帰路デッドライン（${depTime}）を厳守すること。
+- 現地の実際の位置関係に基づき、逆戻りのないスムーズな移動導線にすること。
+- 体力ペースを最優先し、詰め込みすぎないゆとりのあるスケジュールにすること。
+- 実際の営業時間・定休日を考慮し、移動時間はバッファ込みで設計すること。
+- 天候変化に備えた「雨天代替案」を適宜織り交ぜること。
 
 ⚠️ URLはすべて空文字のまま出力してください（システムが自動生成します）。
 ⚠️ 回答はJSON形式のみで出力し、挨拶・説明文・コードブロック記号は不要です。
 
 ### ⚠️ 出力フォーマット（必須）
+
 {
-  "trip_title": "旅タイトル（おしゃれに）",
-  "trip_concept": "旅のコンセプト（100文字程度）",
-  "days": [
-    {
-      "day": 1,
-      "theme": "この日のテーマ",
-      "schedule": [
-        {
-          "time": "HH:MM",
-          "place": "スポット名",
-          "category": "cafe / lunch / sightseeing / hotel / dinner / activity / move のいずれか",
-          "reason": "【${myPersona}】の感性に寄り添った提案理由（おしゃれな文体で）",
-          "stay_minutes": 60,
-          "move_to_next": "次への移動方法と時間目安",
-          "tips": "混雑回避・ベストアングル等のワンポイント情報"
-        }
-      ]
-    }
-  ],
-  "hotel": {
-    "area": "おすすめ宿泊エリアまたはホテルの方向性",
-    "reason": "【${myPersona}】の感性に合う理由"
-  },
-  "summary": "コンシェルジュからの温かいエールメッセージ（150文字程度）"
+"trip_title": "旅タイトル（おしゃれに）",
+"trip_concept": "旅のコンセプト（100文字程度）",
+"days": [
+{
+"day": 1,
+"theme": "この日のテーマ",
+"schedule": [
+{
+"time": "HH:MM",
+"place": "スポット名",
+"category": "cafe / lunch / sightseeing / hotel / dinner / activity / move のいずれか",
+"reason": "【${myPersona}】の感性に寄り添った提案理由（おしゃれな文体で）",
+"stay_minutes": 60,
+"move_to_next": "次への移動方法と時間目安",
+"tips": "混雑回避・ベストアングル等のワンポイント情報"
+}
+]
+}
+],
+"hotel": {
+"area": "おすすめ宿泊エリアまたはホテルの方向性",
+"reason": "【${myPersona}】の感性に合う理由"
+},
+"summary": "コンシェルジュからの温かいエールメッセージ（150文字程度）"
 }`;
 
-    const output = document.getElementById('prompt-output');
-    output.textContent = prompt;
-    const result = document.getElementById('prompt-result');
-    result.style.display = 'block';
-    document.getElementById('copy-toast').style.display = 'none';
-    result.scrollIntoView({ behavior: 'smooth', block: 'start' });
-  },
+```
+const output = document.getElementById('prompt-output');
+output.textContent = prompt;
+const result = document.getElementById('prompt-result');
+result.style.display = 'block';
+document.getElementById('copy-toast').style.display = 'none';
+result.scrollIntoView({ behavior: 'smooth', block: 'start' });
+```
 
-  copy() {
-    const text = document.getElementById('prompt-output').textContent;
-    const ta = document.createElement('textarea');
-    ta.value = text;
-    ta.style.cssText = 'position:fixed;opacity:0;top:0;left:0;';
-    document.body.appendChild(ta);
-    ta.select();
-    try {
-      document.execCommand('copy');
-      const toast = document.getElementById('copy-toast');
-      toast.style.display = 'block';
-      setTimeout(() => { toast.style.display = 'none'; }, 2500);
-    } catch(e) {
-      console.warn('Copy failed', e);
-    }
-    document.body.removeChild(ta);
-  }
+},
+
+copy() {
+const text = document.getElementById('prompt-output').textContent;
+const ta = document.createElement('textarea');
+ta.value = text;
+ta.style.cssText = 'position:fixed;opacity:0;top:0;left:0;';
+document.body.appendChild(ta);
+ta.select();
+try {
+document.execCommand('copy');
+const toast = document.getElementById('copy-toast');
+toast.style.display = 'block';
+setTimeout(() => { toast.style.display = 'none'; }, 2500);
+} catch(e) {
+console.warn('Copy failed', e);
+}
+document.body.removeChild(ta);
+}
 };
 
 /* ────────────────────────────────────────────────────────────────
-   5. shioriInputHandler
+5. shioriInputHandler
 ──────────────────────────────────────────────────────────────── */
 const shioriInputHandler = {
-  open() {
-    const raw = document.getElementById('json-input').value.trim();
-    const errEl = document.getElementById('shiori-error');
+open() {
+const raw = document.getElementById('json-input').value.trim();
+const errEl = document.getElementById('shiori-error');
 
-    if (!raw) {
-      errEl.textContent = 'JSONデータを入力してください。';
-      errEl.style.display = 'block';
-      return;
-    }
+```
+if (!raw) {
+  errEl.textContent = 'JSONデータを入力してください。';
+  errEl.style.display = 'block';
+  return;
+}
 
-    let cleaned = raw;
-    if (cleaned.includes('```json')) cleaned = cleaned.split('```json')[1];
-    if (cleaned.includes('```'))     cleaned = cleaned.split('```')[0];
-    cleaned = cleaned.trim();
+let cleaned = raw;
+if (cleaned.includes('```json')) cleaned = cleaned.split('```json')[1];
+if (cleaned.includes('```'))     cleaned = cleaned.split('```')[0];
+cleaned = cleaned.trim();
 
-    let data;
-    try {
-      data = JSON.parse(cleaned);
-    } catch(e) {
-      errEl.textContent = 'JSONの形式が正しくありません。括弧や引用符を確認してください。';
-      errEl.style.display = 'block';
-      return;
-    }
+let data;
+try {
+  data = JSON.parse(cleaned);
+} catch(e) {
+  errEl.textContent = 'JSONの形式が正しくありません。括弧や引用符を確認してください。';
+  errEl.style.display = 'block';
+  return;
+}
 
-    errEl.style.display = 'none';
+errEl.style.display = 'none';
 
-    const area = document.getElementById('destination').value.trim() ||
-                 AppState.destination ||
-                 sessionStorage.getItem('tabios_destination') || '';
+const area = document.getElementById('destination').value.trim() ||
+             AppState.destination ||
+             sessionStorage.getItem('tabios_destination') || '';
 
-    sessionStorage.setItem('tabios_shiori_data', JSON.stringify(data));
-    sessionStorage.setItem('tabios_destination', area);
+sessionStorage.setItem('tabios_shiori_data', JSON.stringify(data));
+sessionStorage.setItem('tabios_destination', area);
 
-    // Open in new tab; fall back to same tab if popup is blocked
-    const newTab = window.open('shiori.html', '_blank');
-    if (!newTab || newTab.closed || typeof newTab.closed === 'undefined') {
-      window.location.href = 'shiori.html';
-    }
-  }
+// Open in new tab; fall back to same tab if popup is blocked
+const newTab = window.open('shiori.html', '_blank');
+if (!newTab || newTab.closed || typeof newTab.closed === 'undefined') {
+  window.location.href = 'shiori.html';
+}
+```
+
+}
 };
 
 /* ────────────────────────────────────────────────────────────────
-   6. AppController
+6. AppController
 ──────────────────────────────────────────────────────────────── */
 const AppController = {
 
-  init() {
-    // ── Tab switching ──
-    document.querySelectorAll('.tab-btn').forEach(btn => {
-      btn.addEventListener('click', () => this.switchTab(btn.dataset.panel));
-    });
+init() {
+// ── Tab switching ──
+document.querySelectorAll('.tab-btn').forEach(btn => {
+btn.addEventListener('click', () => this.switchTab(btn.dataset.panel));
+});
 
-    // ── Diagnosis ──
-    diagnosis.init();
+```
+// ── Diagnosis ──
+diagnosis.init();
 
-    const quizForm = document.getElementById('quiz-form');
-    if (quizForm) {
-      quizForm.addEventListener('submit', e => { e.preventDefault(); diagnosis.submit(quizForm); });
-    }
+const quizForm = document.getElementById('quiz-form');
+if (quizForm) {
+  quizForm.addEventListener('submit', e => { e.preventDefault(); diagnosis.submit(quizForm); });
+}
 
-    document.getElementById('btn-reset-quiz')?.addEventListener('click', () => {
-      diagnosis.reset(quizForm);
-    });
+document.getElementById('btn-reset-quiz')?.addEventListener('click', () => {
+  diagnosis.reset(quizForm);
+});
 
-    document.getElementById('btn-to-prompt')?.addEventListener('click', () => {
-      this.switchTab('prompt');
-    });
+document.getElementById('btn-to-prompt')?.addEventListener('click', () => {
+  this.switchTab('prompt');
+});
 
-    // Image load/error
-    const img = document.getElementById('result-img');
-    const fallback = document.getElementById('result-img-fallback');
-    if (img) {
-      img.addEventListener('load', () => {
-        img.style.display = 'block';
-        if (fallback) fallback.style.display = 'none';
-      });
-      img.addEventListener('error', () => {
-        img.style.display = 'none';
-        if (fallback) fallback.style.display = 'flex';
-      });
-    }
+// Image load/error
+const img = document.getElementById('result-img');
+const fallback = document.getElementById('result-img-fallback');
+if (img) {
+  img.addEventListener('load', () => {
+    img.style.display = 'block';
+    if (fallback) fallback.style.display = 'none';
+  });
+  img.addEventListener('error', () => {
+    img.style.display = 'none';
+    if (fallback) fallback.style.display = 'flex';
+  });
+}
 
-    // ── Companion toggle ──
-    document.querySelectorAll('input[name="companion"]').forEach(r => {
-      r.addEventListener('change', e => {
-        const wrap = document.getElementById('partner-wrap');
-        if (wrap) wrap.style.display = e.target.value === '一人旅' ? 'none' : 'block';
-      });
-    });
+// ── Companion toggle ──
+document.querySelectorAll('input[name="companion"]').forEach(r => {
+  r.addEventListener('change', e => {
+    const wrap = document.getElementById('partner-wrap');
+    if (wrap) wrap.style.display = e.target.value === '一人旅' ? 'none' : 'block';
+  });
+});
 
-    // ── Prompt form ──
-    const promptForm = document.getElementById('prompt-form');
-    if (promptForm) {
-      promptForm.addEventListener('submit', e => { e.preventDefault(); promptGenerator.submit(promptForm); });
-    }
+// ── Prompt form ──
+const promptForm = document.getElementById('prompt-form');
+if (promptForm) {
+  promptForm.addEventListener('submit', e => { e.preventDefault(); promptGenerator.submit(promptForm); });
+}
 
-    document.getElementById('btn-copy-prompt')?.addEventListener('click', () => {
-      promptGenerator.copy();
-    });
+document.getElementById('btn-copy-prompt')?.addEventListener('click', () => {
+  promptGenerator.copy();
+});
 
-    // ── Shiori ──
-    document.getElementById('btn-gen-shiori')?.addEventListener('click', () => {
-      shioriInputHandler.open();
-    });
-  },
+// ── Shiori ──
+document.getElementById('btn-gen-shiori')?.addEventListener('click', () => {
+  shioriInputHandler.open();
+});
+```
 
-  switchTab(panelName) {
-    document.querySelectorAll('.tab-btn').forEach(btn => {
-      btn.classList.toggle('active', btn.dataset.panel === panelName);
-    });
-    document.querySelectorAll('.app-panel').forEach(panel => {
-      const isActive = panel.id === `panel-${panelName}`;
-      if (isActive) {
-        panel.classList.add('active');
-      } else {
-        panel.classList.remove('active');
-      }
-    });
-    AppState.currentTab = panelName;
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  }
+},
+
+switchTab(panelName) {
+document.querySelectorAll('.tab-btn').forEach(btn => {
+btn.classList.toggle('active', btn.dataset.panel === panelName);
+});
+document.querySelectorAll('.app-panel').forEach(panel => {
+const isActive = [panel.id](http://panel.id/) === `panel-${panelName}`;
+if (isActive) {
+panel.classList.add('active');
+} else {
+panel.classList.remove('active');
+}
+});
+AppState.currentTab = panelName;
+window.scrollTo({ top: 0, behavior: 'smooth' });
+}
 };
 
 /* ────────────────────────────────────────────────────────────────
-   7. Init
+7. Init
 ──────────────────────────────────────────────────────────────── */
 document.addEventListener('DOMContentLoaded', () => {
-  AppController.init();
+AppController.init();
 });
