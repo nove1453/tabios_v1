@@ -55,6 +55,25 @@ const linkGenerator = {
   }
 };
 
+const personalityCatalog = {
+  PAVL: { name:'旅演出家', tagline:'旅全体の世界観を作り込むタイプ' },
+  PAVS: { name:'景色収集家', tagline:'絶景・映えスポットを賢くコレクションするタイプ' },
+  PAEL: { name:'感性探訪家', tagline:'土地の文化・アートに深くひたるタイプ' },
+  PAES: { name:'路地開拓士', tagline:'まだ知られていない場所を計画的に開拓するタイプ' },
+  PCVL: { name:'余白貴族', tagline:'何もしない時間も旅の楽しみなエレガントタイプ' },
+  PCVS: { name:'カフェ漂流家', tagline:'カフェや美術館をスマートに巡るカルチャーサーファー' },
+  PCEL: { name:'癒し滞在家', tagline:'最高の宿で心身をリセットするヒーリングタイプ' },
+  PCES: { name:'静かな放浪家', tagline:'静かなローカルの時間に没頭するインドア旅人' },
+  FAVL: { name:'夜更かし演出家', tagline:'直感とトキメキで夜の旅を彩るタイプ' },
+  FAVS: { name:'映え放浪家', tagline:'直感で最高の映えを逃さない天性のセンサー' },
+  FAEL: { name:'自由探検家', tagline:'好奇心のままに飛び込むハプニング大歓迎タイプ' },
+  FAES: { name:'気まぐれ開拓士', tagline:'身軽さと直感でローカルを開拓する冒険者タイプ' },
+  FCVL: { name:'月夜の漂流家', tagline:'気ままにラグジュアリーを楽しむ大人の自由人' },
+  FCVS: { name:'余白収集家', tagline:'風の吹くままに余白を愛するノマドタイプ' },
+  FCEL: { name:'空気感旅行家', tagline:'目に見えない空気感や情緒を味わうポエトリーな旅人' },
+  FCES: { name:'風まかせ人', tagline:'最もニュートラルで自然体な究極の旅人' }
+};
+
 /* ────────────────────────────────────────────────────────────────
    3. shioriRenderer
 ──────────────────────────────────────────────────────────────── */
@@ -103,7 +122,7 @@ const shioriRenderer = {
   _renderStoryCard(container, data, gradient) {
     if (!container) return;
     const cfg = data.image_config || {};
-    const persona = data.traveler_personality || this._getStoredPersonality() || {};
+    const persona = this._resolvePersonality(data);
     const code = (persona.code || 'PAVL').toLowerCase();
     const typeImage = persona.illustration || `images/${code}.png`;
     const firstDay = (data.days || [])[0] || {};
@@ -165,6 +184,32 @@ const shioriRenderer = {
     } catch(e) {
       return null;
     }
+  },
+
+  _resolvePersonality(data) {
+    const sources = [
+      this._getStoredPersonality(),
+      data.traveler_personality,
+      data.personality,
+      data.image_config?.traveler_personality
+    ].filter(Boolean);
+
+    const raw = sources.find(Boolean) || {};
+    const source = typeof raw === 'string' ? { name: raw } : raw;
+    const code = String(source.code || source.type || '').toUpperCase();
+    const byCode = personalityCatalog[code];
+    const byNameEntry = Object.entries(personalityCatalog)
+      .find(([, value]) => value.name === source.name);
+    const resolvedCode = byCode ? code : (byNameEntry ? byNameEntry[0] : '');
+    const master = byCode || byNameEntry?.[1] || {};
+
+    return {
+      code: resolvedCode || code,
+      name: source.name || master.name || '旅タイプ',
+      tagline: source.tagline || master.tagline || 'あなたらしい旅の空気を大切にするタイプ',
+      illustration: source.illustration ||
+        (resolvedCode || code ? `images/${(resolvedCode || code).toLowerCase()}.png` : '')
+    };
   },
 
   _getStoryTags(data) {
