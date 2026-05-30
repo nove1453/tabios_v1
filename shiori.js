@@ -133,9 +133,8 @@ const shioriRenderer = {
         <section class="sc-type-card" data-glass>
           <div class="sc-type-copy">
             <p class="sc-label">TRAVEL TYPE</p>
-            <strong>${this._esc(persona.name || '----')}</strong>
-            <small>${this._esc(`${(persona.code || '----')}</small>
-            <small>${persona.tagline || 'あなたらしい旅の空気を大切にするタイプ'}`)}</small>
+            <strong>${this._esc(persona.name || '旅タイプ')}</strong>
+            <small>${this._esc(`${(persona.code || '----')}・${persona.tagline || 'あなたらしい旅の空気を大切にするタイプ'}`)}</small>
           </div>
           <figure class="sc-type-visual">
             <img src="${this._esc(typeImage)}" alt="" onerror="this.style.display='none'; this.nextElementSibling.style.display='grid';">
