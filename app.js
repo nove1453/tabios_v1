@@ -39,7 +39,7 @@ FCES: { name:'風まかせ人',    tagline:'最もニュートラルで自然体
 },
 
 getPersonalityByName(name) {
-return Object.values(this.personalities).find(p => [p.name](http://p.name/) === name) || null;
+return Object.values(this.personalities).find(p => p.name === name) || null;
 },
 
 getDayBg(dayNum) {
@@ -53,26 +53,6 @@ const bgs = [
 return bgs[(dayNum - 1) % bgs.length];
 }
 };
-function displayResult(resultData) {
-document.getElementById('result-code').innerText = resultData.code;
-const resultImg = document.getElementById('result-img');
-const fallback = document.getElementById('result-img-fallback');
-
-resultImg.src = ${resultData.code.toLowerCase()}.png;
-resultImg.style.display = 'block';
-
-resultImg.onload = () => {
-fallback.style.display = 'none';
-};
-
-resultImg.onerror = () => {
-resultImg.style.display = 'none';
-fallback.style.display = 'flex';
-};
-
-document.getElementById('result-view').style.display = 'block';
-}
-
 /* ────────────────────────────────────────────────────────────────
 2. linkGenerator
 ──────────────────────────────────────────────────────────────── */
@@ -141,10 +121,10 @@ const labels = ['そう思う', 'ややそう', 'どちらでも', 'あまり', 
 this.questions.forEach((q, i) => {
 const card = document.createElement('div');
 card.className = 'q-card';
-[card.id](http://card.id/) = `qcard-${q.id}`;
+card.id = `qcard-${q.id}`;
 card.innerHTML =         `<span class="q-num">Q${String(i + 1).padStart(2, '0')}</span>         <p class="q-text">${q.text}</p>         <div class="q-options">           ${[5, 4, 3, 2, 1].map((v, idx) =>`
 <label class="opt-label">
-<input type="radio" name="q${[q.id](http://q.id/)}" value="${v}" class="opt-radio">
+<input type="radio" name="q${q.id}" value="${v}" class="opt-radio">
 <div class="opt-circle"></div>
 <span class="opt-mini">${labels[idx]}</span>
 </label>
@@ -565,7 +545,7 @@ document.querySelectorAll('.tab-btn').forEach(btn => {
 btn.classList.toggle('active', btn.dataset.panel === panelName);
 });
 document.querySelectorAll('.app-panel').forEach(panel => {
-const isActive = [panel.id](http://panel.id/) === `panel-${panelName}`;
+const isActive = panel.id === `panel-${panelName}`;
 if (isActive) {
 panel.classList.add('active');
 } else {
