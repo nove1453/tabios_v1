@@ -687,31 +687,3 @@ line-height: 1.7;
 .opt-label:nth-child(3) .opt-circle { width: 27px; height: 27px; }
 .q-text { font-size: 0.88rem; }
 }
-
-/* 診断結果イラスト用スタイル */
-.result-img-wrap {
-width: 100%;
-max-width: 340px;
-margin: 0 auto 22px;
-border-radius: 28px;
-overflow: hidden;
-aspect-ratio: 16 / 10;
-background: var(--brand-light);
-position: relative;
-}
-.result-img {
-width: 100%;
-height: 100%;
-object-fit: cover;
-display: none; /* 初期状態は隠しておく */
-}
-.result-img-fallback {
-position: absolute;
-inset: 0;
-display: flex;
-flex-direction: column;
-align-items: center;
-justify-content: center;
-gap: 8px;
-color: var(--text-sub);
-}
