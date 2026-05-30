@@ -509,7 +509,7 @@ max-width: 340px;
 margin: 0 auto 22px;
 border-radius: var(--r-lg);
 overflow: hidden;
-aspect-ratio: 16 / 10;
+aspect-ratio: 1/1;
 background: var(--brand-light);
 position: relative;
 box-shadow: var(--shadow-sm);
@@ -517,7 +517,8 @@ box-shadow: var(--shadow-sm);
 .result-img {
 width: 100%; height: 100%;
 object-fit: cover;
-display: block;
+object-position: center;
+display: none;
 }
 .result-img-fallback {
 position: absolute;
