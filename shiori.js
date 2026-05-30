@@ -134,7 +134,8 @@ const shioriRenderer = {
           <div class="sc-type-copy">
             <p class="sc-label">TRAVEL TYPE</p>
             <strong>${this._esc(persona.name || '旅タイプ')}</strong>
-            <small>${this._esc(`${(persona.code || '----')}・${persona.tagline || 'あなたらしい旅の空気を大切にするタイプ'}`)}</small>
+            <small>TYPE: ${this._esc(persona.code || '----')}</small>
+            <em>${this._esc(persona.tagline || 'あなたらしい旅の空気を大切にするタイプ')}</em>
           </div>
           <figure class="sc-type-visual">
             <img src="${this._esc(typeImage)}" alt="" onerror="this.style.display='none'; this.nextElementSibling.style.display='grid';">
