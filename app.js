@@ -199,7 +199,6 @@ const unanswered = this.questions.filter(q =>
 );
 document.querySelectorAll('.q-card').forEach(c => c.classList.remove('error'));
 
-```
 if (unanswered.length > 0) {
   unanswered.forEach(q => {
     document.getElementById(`qcard-${q.id}`)?.classList.add('error');
@@ -229,7 +228,6 @@ const sel = document.getElementById('my-personality');
 if (sel && persona) sel.value = persona.name;
 
 this._showResult(code, persona, scores);
-```
 
 },
 
@@ -238,7 +236,6 @@ const view = document.getElementById('result-view');
 const img = document.getElementById('result-img');
 const fallback = document.getElementById('result-img-fallback');
 
-```
 img.style.display = 'none';
 fallback.style.display = 'flex';
 img.src = `images/${code.toLowerCase()}.png`;
@@ -259,7 +256,6 @@ setTimeout(() => {
 }, 120);
 
 view.scrollIntoView({ behavior: 'smooth', block: 'start' });
-```
 
 },
 
@@ -334,7 +330,6 @@ const themes       = this._checked('#th-heal, #th-fun, #th-eat, #th-photo, #th-n
 const avoids       = this._checked('#av-q, #av-cr, #av-er, #av-ti, #av-lm, #av-op');
 const hotels       = this._checked('#ht-sl, #ht-sa, #ht-vw, #ht-ph, #ht-on, #ht-lc');
 
-```
 const errEl = document.getElementById('prompt-error');
 if (!myPersona || !destination || !arrDt || !depDt || !duration || !budget || !transport) {
   errEl.textContent = '必須項目（*）をすべて入力・選択してください。';
@@ -360,7 +355,6 @@ const arrTime = this._timeOnly(arrDt);
 const depTime = this._timeOnly(depDt);
 
 const prompt = `あなたは、旅の「世界観」や「人間の情緒・価値観」を深く理解し、型通りの観光地巡りではない最高の旅をデザインしてくれる『一流の旅コンシェルジュ』です。
-```
 
 私たちの価値観やコンディションに寄り添った、最高に愛おしい旅行プランを提案してください。
 
@@ -474,7 +468,6 @@ open() {
 const raw = document.getElementById('json-input').value.trim();
 const errEl = document.getElementById('shiori-error');
 
-```
 if (!raw) {
   errEl.textContent = 'JSONデータを入力してください。';
   errEl.style.display = 'block';
@@ -509,7 +502,6 @@ const newTab = window.open('shiori.html', '_blank');
 if (!newTab || newTab.closed || typeof newTab.closed === 'undefined') {
   window.location.href = 'shiori.html';
 }
-```
 
 }
 };
@@ -525,7 +517,6 @@ document.querySelectorAll('.tab-btn').forEach(btn => {
 btn.addEventListener('click', () => this.switchTab(btn.dataset.panel));
 });
 
-```
 // ── Diagnosis ──
 diagnosis.init();
 
@@ -578,7 +569,6 @@ document.getElementById('btn-copy-prompt')?.addEventListener('click', () => {
 document.getElementById('btn-gen-shiori')?.addEventListener('click', () => {
   shioriInputHandler.open();
 });
-```
 
 },
 
