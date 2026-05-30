@@ -9,98 +9,22 @@
 ──────────────────────────────────────────────────────────────── */
 const themeManager = {
 
-  getStoryPalette(data, area) {
-    const cfg = data.image_config || {};
-    const cfgColors = [cfg.theme_color, cfg.theme_color_secondary, cfg.accent_color, cfg.text_color]
-      .filter(c => /^#[0-9a-f]{6}$/i.test(c || ''));
-    const listedColors = Array.isArray(cfg.palette_colors)
-      ? cfg.palette_colors.filter(c => /^#[0-9a-f]{6}$/i.test(c || '')).slice(0, 4)
-      : [];
-
-    if (cfgColors.length >= 3) {
-      return {
-        name: cfg.palette_name || cfg.destination_vibe || '旅のムード',
-        colors: listedColors.length > 0
-          ? listedColors
-          : [cfg.theme_color, cfg.theme_color_secondary, cfg.accent_color, '#FFFFFF'],
-        gradient: cfg.background_style === 'solid'
-          ? cfg.theme_color
-          : `linear-gradient(160deg, ${cfg.theme_color} 0%, ${cfg.theme_color_secondary || cfg.theme_color} 48%, #FFFFFF 100%)`,
-        accent: cfg.accent_color || cfg.theme_color,
-        text: cfg.text_color || '#252525',
-        mood: cfg.mood || ''
-      };
-    }
-
-    const txt = [
-      area,
-      data.trip_title,
-      data.trip_concept,
-      cfg.mood,
-      cfg.destination_vibe,
-      ...(cfg.visual_keywords || [])
-    ].join(' ').toLowerCase();
-
-    const palettes = [
-      {
-        test: /海|島|宮古|石垣|沖縄|マリン|珊瑚|サンゴ|夏|beach|ocean|resort/,
-        name: 'Okinawa Blue',
-        colors: ['#A8D4EC', '#74BCD8', '#F7E7B0', '#FFFFFF'],
-        gradient: 'linear-gradient(160deg, #A8D4EC 0%, #74BCD8 34%, #DDF4F8 70%, #FFF7DC 100%)',
-        accent: '#167D9A',
-        text: '#183642',
-        mood: 'serene'
-      },
-      {
-        test: /京都|奈良|鎌倉|寺|神社|和|抹茶|着物|茶道|紅葉|秋/,
-        name: 'Kyoto Matcha',
-        colors: ['#8FA36B', '#D7B56D', '#B85C38', '#F7EFE2'],
-        gradient: 'linear-gradient(160deg, #F7EFE2 0%, #D7C59A 34%, #9FB37A 68%, #B85C38 100%)',
-        accent: '#7C8F50',
-        text: '#2E291F',
-        mood: 'nostalgic'
-      },
-      {
-        test: /北海道|森|山|自然|高原|緑|湖|キャンプ|春/,
-        name: 'Forest Air',
-        colors: ['#B4D4B4', '#7BAE87', '#E9F3D2', '#FFFFFF'],
-        gradient: 'linear-gradient(160deg, #E9F3D2 0%, #B4D4B4 38%, #7BAE87 72%, #F8FFF0 100%)',
-        accent: '#4E805A',
-        text: '#243526',
-        mood: 'fresh'
-      },
-      {
-        test: /東京|大阪|夜|都市|夜景|ネオン|渋谷|新宿|冬|urban/,
-        name: 'Urban Lavender',
-        colors: ['#C8C0E8', '#6F6A9A', '#F1D2E8', '#202038'],
-        gradient: 'linear-gradient(160deg, #EDE8FF 0%, #C8C0E8 36%, #8E88BE 72%, #2C2D4F 100%)',
-        accent: '#6F6A9A',
-        text: '#202038',
-        mood: 'vibrant'
-      },
-      {
-        test: /韓国|ソウル|釜山|仁川|cafe/,
-        name: 'Seoul Rose',
-        colors: ['#F0C8D4', '#D998AA', '#F7E7EC', '#FFFFFF'],
-        gradient: 'linear-gradient(160deg, #FFF0F4 0%, #F0C8D4 42%, #D998AA 78%, #FFFFFF 100%)',
-        accent: '#B95E77',
-        text: '#402831',
-        mood: 'cozy'
-      }
-    ];
-
-    return palettes.find(p => p.test.test(txt)) || {
-      name: 'Soft Journey',
-      colors: ['#E8D4C0', '#C4A882', '#FAF0E8', '#FFFFFF'],
-      gradient: 'linear-gradient(160deg, #FAF0E8 0%, #F0E0D0 34%, #E8D4C0 70%, #FDF8F2 100%)',
-      accent: '#A8886A',
-      text: '#252525',
-      mood: cfg.mood || 'calm'
-    };
-  },
-
-  getStoryGradient(data, area) {
-    return this.getStoryPalette(data, area).gradient;
+  getStoryGradient(title, concept) {
+    const txt = ((title || '') + ' ' + (concept || '')).toLowerCase();
+    if (/海|島|宮古|石垣|沖縄|マリン|珊瑚|サンゴ|beach|ocean/.test(txt))
+      return 'linear-gradient(160deg, #B8DCF5 0%, #94C8EC 30%, #C8E8F8 65%, #E4F4FC 100%)';
+    if (/京都|奈良|鎌倉|寺|神社|和|抹茶|着物|茶道/.test(txt))
+      return 'linear-gradient(160deg, #FAF0E2 0%, #F0E0C4 30%, #E8D0A8 65%, #FDF6EC 100%)';
+    if (/北海道|森|山|自然|高原|緑|湖|キャンプ/.test(txt))
+      return 'linear-gradient(160deg, #DCF0DC 0%, #C4E4C4 30%, #B4DAB8 65%, #E8F5E8 100%)';
+    if (/東京|大阪|夜|都市|夜景|ネオン|渋谷|新宿/.test(txt))
+      return 'linear-gradient(160deg, #E8E0F8 0%, #D8D0F0 30%, #CAC0E8 65%, #F0ECF8 100%)';
+    if (/韓国|ソウル|釜山|仁川/.test(txt))
+      return 'linear-gradient(160deg, #FCE8EE 0%, #F8D0DC 30%, #F0C0CC 65%, #FFF0F4 100%)';
+    if (/台湾|台北|高雄/.test(txt))
+      return 'linear-gradient(160deg, #FFF0D8 0%, #FCDCA8 30%, #F8CC90 65%, #FFF8EC 100%)';
+    // Default: warm peach-cream
+    return 'linear-gradient(160deg, #FAF0E8 0%, #F0E0D0 30%, #E8D4C0 65%, #FDF8F2 100%)';
   },
 
   getDayBg(dayNum) {
@@ -137,12 +61,10 @@ const linkGenerator = {
 const shioriRenderer = {
 
   render(data, area) {
-    const palette = themeManager.getStoryPalette(data, area);
-    const gradient = palette.gradient;
+    const gradient = themeManager.getStoryGradient(data.trip_title, data.trip_concept);
 
     // Apply gradient to page background
     document.body.style.background = gradient;
-    document.documentElement.style.setProperty('--brand', palette.accent);
 
     // Nav title
     const navTitle = document.getElementById('sNavTitle');
@@ -151,7 +73,7 @@ const shioriRenderer = {
     }
 
     // Story card
-    this._renderStoryCard(document.getElementById('storyCard'), data, palette);
+    this._renderStoryCard(document.getElementById('storyCard'), data, gradient);
 
     // Cover
     const itCover = document.getElementById('itCover');
@@ -178,16 +100,9 @@ const shioriRenderer = {
     if (el) el.textContent = text;
   },
 
-  _renderStoryCard(container, data, palette) {
+  _renderStoryCard(container, data, gradient) {
     if (!container) return;
     const days = (data.days || []).slice(0, 4);
-    const cfg = data.image_config || {};
-    const persona = data.traveler_personality || data.personality || cfg.traveler_personality || {};
-    const code = persona.code || '';
-    const illustration = persona.illustration || (code ? `images/${code.toLowerCase()}.png` : '');
-    const keywords = (cfg.visual_keywords || []).slice(0, 3);
-    const paletteColors = (palette.colors || []).slice(0, 4);
-    const moodLabel = cfg.mood || palette.mood || 'travel';
 
     const daysHtml = days.map(day => {
       const spots = (day.schedule || [])
@@ -205,44 +120,18 @@ const shioriRenderer = {
 
     const summarySnip = (data.summary || '').slice(0, 55) +
                         ((data.summary || '').length > 55 ? '…' : '');
-    const swatchesHtml = paletteColors.map(c => `<span class="sc-swatch" style="background:${c};"></span>`).join('');
-    const keywordsHtml = keywords.map(k => `<span class="sc-keyword">${k}</span>`).join('');
-    const stampHtml = (persona.name || code) ? `
-        <div class="sc-persona-stamp" data-glass>
-          <div class="sc-persona-illust">
-            ${illustration ? `<img src="${illustration}" alt="" onerror="this.style.display='none'; this.nextElementSibling.style.display='grid';">` : ''}
-            <span class="sc-persona-fallback" style="${illustration ? 'display:none;' : ''}">${(code || persona.name || '旅').slice(0, 2)}</span>
-          </div>
-          <div class="sc-persona-copy">
-            <span class="sc-persona-label">Travel Type</span>
-            <strong>${persona.name || '旅タイプ'}</strong>
-            <small>${code}${persona.tagline ? ` · ${persona.tagline}` : ''}</small>
-          </div>
-        </div>` : '';
 
     container.innerHTML = `
-      <div class="sc-bg" style="background:${palette.gradient};"></div>
-      <div class="sc-body" style="--sc-accent:${palette.accent}; --sc-text:${palette.text};">
-        <div class="sc-topline">
-          <div class="sc-brand">Tabi OS</div>
-          <div class="sc-mood">${moodLabel}</div>
-        </div>
+      <div class="sc-bg" style="background:${gradient};"></div>
+      <div class="sc-body">
+        <div class="sc-brand">Tabi OS</div>
         <div class="sc-header" data-glass>
           <div class="sc-trip-title">${data.trip_title || ''}</div>
           <div class="sc-concept">${data.trip_concept || ''}</div>
         </div>
-        ${stampHtml}
-        <div class="sc-palette" data-glass>
-          <div>
-            <span class="sc-palette-label">Mood Palette</span>
-            <strong>${cfg.palette_name || palette.name}</strong>
-          </div>
-          <div class="sc-swatches">${swatchesHtml}</div>
-        </div>
-        ${keywordsHtml ? `<div class="sc-keywords">${keywordsHtml}</div>` : ''}
         <div class="sc-days">${daysHtml}</div>
         <div class="sc-footer" data-glass>
-          <div class="sc-summary-text">${cfg.caption || summarySnip}</div>
+          <div class="sc-summary-text">${summarySnip}</div>
           <div class="sc-hashtag">#tabios</div>
         </div>
       </div>
