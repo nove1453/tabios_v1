@@ -775,7 +775,7 @@ const shioriShare = {
   async share(data, area) {
     const url = this.makeUrl(data, area);
     const title = data.trip_title ? `旅のしおり: ${data.trip_title}` : '旅のしおり';
-    const text = data.trip_concept || 'Tabi OSで作った旅のしおりです。';
+    const text = data.trip_concept || 'TABI OSで作った旅のしおりです。';
 
     try {
       if (navigator.share) {
