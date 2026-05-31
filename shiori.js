@@ -512,6 +512,56 @@ const imageExporter = {
 };
 
 const shioriShare = {
+  storagePrefix: 'tabios_share_',
+  storageIndexKey: 'tabios_share_index',
+
+  createId() {
+    const bytes = new Uint8Array(8);
+    if (window.crypto?.getRandomValues) {
+      window.crypto.getRandomValues(bytes);
+    } else {
+      bytes.forEach((_, i) => { bytes[i] = Math.floor(Math.random() * 256); });
+    }
+    return Array.from(bytes, byte => byte.toString(36).padStart(2, '0')).join('').slice(0, 12);
+  },
+
+  saveLocal(payload) {
+    const id = this.createId();
+    const record = {
+      payload,
+      createdAt: Date.now()
+    };
+    localStorage.setItem(`${this.storagePrefix}${id}`, JSON.stringify(record));
+    this.rememberId(id);
+    return id;
+  },
+
+  rememberId(id) {
+    let ids = [];
+    try {
+      ids = JSON.parse(localStorage.getItem(this.storageIndexKey) || '[]');
+    } catch(e) {
+      ids = [];
+    }
+    const nextIds = [id, ...ids.filter(item => item !== id)];
+    localStorage.setItem(this.storageIndexKey, JSON.stringify(nextIds.slice(0, 20)));
+    nextIds.slice(20).forEach(oldId => {
+      localStorage.removeItem(`${this.storagePrefix}${oldId}`);
+    });
+  },
+
+  readLocal(id) {
+    try {
+      const raw = localStorage.getItem(`${this.storagePrefix}${id}`);
+      if (!raw) return null;
+      const record = JSON.parse(raw);
+      return record.payload || null;
+    } catch(e) {
+      console.warn('Short share data read failed:', e);
+      return null;
+    }
+  },
+
   encode(payload) {
     const json = JSON.stringify(payload);
     const bytes = new TextEncoder().encode(json);
@@ -530,6 +580,11 @@ const shioriShare = {
 
   readFromHash() {
     const params = new URLSearchParams(window.location.hash.replace(/^#/, ''));
+    const shortId = params.get('s');
+    if (shortId) {
+      const localPayload = this.readLocal(shortId);
+      if (localPayload) return localPayload;
+    }
     const packed = params.get('tabios');
     if (!packed) return null;
     try {
@@ -543,7 +598,13 @@ const shioriShare = {
   makeUrl(data, area) {
     const payload = { data, area };
     const url = new URL(window.location.href);
-    url.hash = `tabios=${this.encode(payload)}`;
+    try {
+      const id = this.saveLocal(payload);
+      url.hash = `s=${encodeURIComponent(id)}`;
+    } catch(e) {
+      console.warn('Short share URL failed. Falling back to embedded URL:', e);
+      url.hash = `tabios=${this.encode(payload)}`;
+    }
     return url.toString();
   },
 
