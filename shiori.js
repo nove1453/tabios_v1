@@ -74,6 +74,94 @@ const personalityCatalog = {
   FCES: { name:'風まかせ人', tagline:'最もニュートラルで自然体な究極の旅人' }
 };
 
+const hotelSuggestions = {
+  PAVL: {
+    title: "世界観のある上質ホテル",
+    text: "旅演出家タイプには、旅全体の空気感まで整えてくれる上質なホテルがおすすめです。",
+    button: "上質なホテルを探す"
+  },
+  PAVS: {
+    title: "絶景・眺望の良い宿",
+    text: "景色収集家タイプには、朝焼けや夜景まで楽しめる眺望の良い宿がおすすめです。",
+    button: "絶景ホテルを探す"
+  },
+  PAEL: {
+    title: "文化や美食を楽しめる宿",
+    text: "感性探訪家タイプには、土地の文化や食を深く味わえる宿がおすすめです。",
+    button: "文化を感じる宿を探す"
+  },
+  PAES: {
+    title: "街歩きに便利な宿",
+    text: "路地開拓士タイプには、ローカルな街歩きがしやすい立地の宿がおすすめです。",
+    button: "街歩き向きの宿を探す"
+  },
+  PCVL: {
+    title: "余白を楽しめる温泉宿",
+    text: "余白貴族タイプには、予定を詰め込まず、宿時間そのものを味わえる温泉宿やラグジュアリー宿がおすすめです。",
+    button: "温泉宿・上質宿を探す"
+  },
+  PCVS: {
+    title: "カフェや美術館近くの宿",
+    text: "カフェ漂流家タイプには、カフェ街や美術館、雑貨店にアクセスしやすい宿がおすすめです。",
+    button: "カフェ街近くの宿を探す"
+  },
+  PCEL: {
+    title: "スパ・サウナ・温泉付き宿",
+    text: "癒し滞在家タイプには、移動を減らして心身を休められるスパ・サウナ・温泉付きの宿がおすすめです。",
+    button: "癒しの宿を探す"
+  },
+  PCES: {
+    title: "静かに過ごせる小規模宿",
+    text: "静かな放浪家タイプには、人混みから少し離れて静かに過ごせる小規模な宿がおすすめです。",
+    button: "静かな宿を探す"
+  },
+  FAVL: {
+    title: "夜景やバーを楽しめる宿",
+    text: "夜更かし演出家タイプには、夜景やバー、繁華街へのアクセスが良い宿がおすすめです。",
+    button: "夜を楽しめる宿を探す"
+  },
+  FAVS: {
+    title: "デザインホテル・映え宿",
+    text: "映え放浪家タイプには、写真に残したくなるデザインホテルや個性ある宿がおすすめです。",
+    button: "映える宿を探す"
+  },
+  FAEL: {
+    title: "アクティビティ拠点の宿",
+    text: "自由探検家タイプには、現地体験やアクティビティに動きやすい拠点型の宿がおすすめです。",
+    button: "冒険の拠点宿を探す"
+  },
+  FAES: {
+    title: "リーズナブルで動きやすい宿",
+    text: "気まぐれ開拓士タイプには、価格を抑えながら自由に動ける立地重視の宿がおすすめです。",
+    button: "動きやすい宿を探す"
+  },
+  FCVL: {
+    title: "大人向けラグジュアリー宿",
+    text: "月夜の漂流家タイプには、夜の余韻やご褒美感を楽しめる大人向けの上質宿がおすすめです。",
+    button: "大人の上質宿を探す"
+  },
+  FCVS: {
+    title: "長居したくなる宿",
+    text: "余白収集家タイプには、予定を決めずにゆっくり滞在したくなる居心地の良い宿がおすすめです。",
+    button: "長居したい宿を探す"
+  },
+  FCEL: {
+    title: "街の空気を味わえる宿",
+    text: "空気感旅行家タイプには、その土地の暮らしや街の情緒を感じられる宿がおすすめです。",
+    button: "街の空気を感じる宿を探す"
+  },
+  FCES: {
+    title: "コスパ良く泊まれる宿",
+    text: "風まかせ人タイプには、気軽に泊まれて自由に動けるコスパの良い宿がおすすめです。",
+    button: "コスパ宿を探す"
+  }
+};
+
+const rakutenAffiliate = {
+  href: "https://hb.afl.rakuten.co.jp/hsc/545d0372.2fc54cdc.545d0373.e627ea30/?link_type=pict&ut=eyJwYWdlIjoic2hvcCIsInR5cGUiOiJwaWN0IiwiY29sIjoxLCJjYXQiOiIxIiwiYmFuIjo2MTcwOTEsImFtcCI6ZmFsc2V9",
+  image: "https://hbb.afl.rakuten.co.jp/hsb/545d0372.2fc54cdc.545d0373.e627ea30/?me_id=2100001&me_adv_id=617091&t=pict"
+};
+
 /* ────────────────────────────────────────────────────────────────
    3. shioriRenderer
 ──────────────────────────────────────────────────────────────── */
@@ -110,6 +198,9 @@ const shioriRenderer = {
     // Days
     this._renderDays(document.getElementById('itDaysContainer'), data.days || [], area);
 
+    // Affiliate hotel suggestion
+    this._renderAffiliateHotel(data, area);
+
     // Summary
     this._setText('itSummary', data.summary || '');
   },
@@ -117,6 +208,56 @@ const shioriRenderer = {
   _setText(id, text) {
     const el = document.getElementById(id);
     if (el) el.textContent = text;
+  },
+
+  _renderAffiliateHotel(data, area) {
+    const card = document.getElementById('affiliateHotelCard');
+    if (!card) return;
+
+    const persona = this._resolvePersonality(data);
+    const suggestion = hotelSuggestions[persona.code] || {
+      title: "この旅に合う宿",
+      text: "今回の旅の空気感に合わせて、心地よく過ごせる宿を選ぶのがおすすめです。",
+      button: "宿を探す"
+    };
+    const destination = this._getDestinationLabel(data, area);
+    const destinationText = destination ? `${destination}の宿探し` : '旅先の宿探し';
+    const buttonText = destination ? `${destination}で${suggestion.button}` : suggestion.button;
+
+    this._setText('affiliateDestination', destinationText);
+    this._setText('affiliateTitle', suggestion.title);
+    this._setText('affiliateText', suggestion.text);
+
+    const button = document.getElementById('affiliateButton');
+    if (button) {
+      button.href = rakutenAffiliate.href;
+      button.textContent = buttonText;
+      button.setAttribute('rel', 'nofollow sponsored noopener');
+      button.setAttribute('target', '_blank');
+    }
+
+    const banner = document.getElementById('affiliateBanner');
+    const bannerImg = document.getElementById('affiliateBannerImg');
+    if (banner) {
+      banner.href = rakutenAffiliate.href;
+      banner.setAttribute('rel', 'nofollow sponsored noopener');
+      banner.setAttribute('target', '_blank');
+    }
+    if (bannerImg) {
+      bannerImg.src = rakutenAffiliate.image;
+    }
+
+    card.style.display = '';
+  },
+
+  _getDestinationLabel(data, area) {
+    const hotelArea = data.hotel?.area || '';
+    const raw = area || data.destination || data.area || hotelArea || '';
+    return String(raw)
+      .replace(/おすすめ宿泊エリア|おすすめ|ホテルの方向性|宿泊エリア|周辺|エリア/g, '')
+      .replace(/[。、「」]/g, '')
+      .trim()
+      .slice(0, 18);
   },
 
   _renderStoryCard(container, data, gradient) {
@@ -129,13 +270,18 @@ const shioriRenderer = {
     const theme = firstDay.theme || data.trip_concept || '';
     const tags = this._getStoryTags(data);
     const rows = this._getStoryRows(data);
+    const meta = this._getStoryMeta(data);
     const tagsHtml = tags.map(tag => `<span class="sc-tag">${this._esc(tag)}</span>`).join('');
+    const metaHtml = meta.map(item => `
+      <span class="sc-info-pill">
+        <b>${this._esc(item.label)}：</b>${this._esc(item.value)}
+      </span>
+    `).join('');
     const rowsHtml = rows.map(row => `
       <li class="sc-route-row">
         <span class="sc-route-time">${this._esc(row.time)}</span>
         <span class="sc-route-main">
           <strong>${this._esc(row.place)}</strong>
-          <small>${this._esc(row.note)}</small>
         </span>
       </li>
     `).join('');
@@ -168,6 +314,8 @@ const shioriRenderer = {
           <div class="sc-day-pill">${(data.days || []).length > 1 ? 'HIGHLIGHT' : 'DAY 1'}</div>
           <ol class="sc-route-list">${rowsHtml}</ol>
         </section>
+
+        <div class="sc-info-pills">${metaHtml}</div>
 
         <div class="sc-card-footer">
           <span></span>
@@ -230,15 +378,9 @@ const shioriRenderer = {
           .filter(item => item.category !== 'move' && item.place)
           .slice(0, 2)
           .map(item => item.place);
-        const costs = (day.schedule || [])
-          .map(item => this._getCostText(item))
-          .filter(Boolean);
         return {
           time: `DAY ${day.day}`,
-          place: day.theme || spots.join(' → ') || `Day ${day.day}`,
-          note: [spots.join(' / '), costs.length ? `目安 ${costs.join(' + ')}` : '']
-            .filter(Boolean)
-            .join(' / ')
+          place: day.theme || spots.join(' → ') || `Day ${day.day}`
         };
       });
     }
@@ -248,11 +390,33 @@ const shioriRenderer = {
       .slice(0, 3)
       .map(item => ({
         time: item.time || '',
-        place: item.place || '',
-        note: [item.reason || item.tips || '', this._getCostText(item)]
-          .filter(Boolean)
-          .join(' / ')
+        place: item.place || ''
       }));
+  },
+
+  _getStoryMeta(data) {
+    const items = (data.days || [])
+      .flatMap(day => day.schedule || [])
+      .filter(Boolean);
+    const budget = this._summarizeBudget(items);
+    return [
+      budget ? { label: '予算目安', value: budget } : null
+    ].filter(Boolean);
+  },
+
+  _summarizeBudget(items) {
+    const numbers = items
+      .map(item => item.cost_yen)
+      .filter(value => typeof value === 'number' && Number.isFinite(value));
+    if (numbers.length) {
+      const total = numbers.reduce((sum, value) => sum + value, 0);
+      return `約${total.toLocaleString('ja-JP')}円`;
+    }
+
+    const label = items
+      .map(item => this._getCostText(item))
+      .find(Boolean);
+    return label || '';
   },
 
   _getCostText(item) {
