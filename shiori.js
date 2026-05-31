@@ -319,9 +319,9 @@ const shioriRenderer = {
 
         <div class="sc-card-footer">
           <span></span>
-          <b>Tabi OS</b>
+          <b>あなただけの、旅をする。</b>
         </div>
-        <div class="sc-hashtag">#Tabios</div>
+        <div class="sc-hashtag">#TABI OS</div>
       </div>
     `;
   },
