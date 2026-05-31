@@ -319,7 +319,7 @@ const shioriRenderer = {
 
         <div class="sc-card-footer">
           <span></span>
-          <b>あなただけの、旅をする。</b>
+          <b>あなたらしく、旅をする。</b>
         </div>
         <div class="sc-hashtag">#TABI OS</div>
       </div>
