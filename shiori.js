@@ -281,7 +281,7 @@ const shioriRenderer = {
       <li class="sc-route-row">
         <span class="sc-route-time">${this._esc(row.time)}</span>
         <span class="sc-route-main">
-          <strong>${this._esc(row.place)}</strong>
+          <strong style="font-size:${this._storyPlaceFontSize(row.place)}rem;">${this._esc(row.place)}</strong>
         </span>
       </li>
     `).join('');
@@ -319,9 +319,9 @@ const shioriRenderer = {
 
         <div class="sc-card-footer">
           <span></span>
-          <b>あなたらしく、旅をする。</b>
+          <b>Tabi OS</b>
         </div>
-        <div class="sc-hashtag">#TABI OS</div>
+        <div class="sc-hashtag">#Tabios</div>
       </div>
     `;
   },
@@ -392,6 +392,14 @@ const shioriRenderer = {
         time: item.time || '',
         place: item.place || ''
       }));
+  },
+
+  _storyPlaceFontSize(text) {
+    const len = Array.from(String(text || '')).length;
+    if (len > 22) return 0.58;
+    if (len > 18) return 0.62;
+    if (len > 14) return 0.68;
+    return 0.78;
   },
 
   _getStoryMeta(data) {
