@@ -153,7 +153,7 @@ exportAll() {
 const items = this.list();
 const payload = {
   exported_at: new Date().toISOString(),
-  app: 'Tabi OS',
+  app: 'TABI OS',
   trips: items
 };
 fileDownloader.downloadText('tabios-trip-archive.json', JSON.stringify(payload, null, 2));
