@@ -69,6 +69,282 @@ return `https://www.google.com/search?q=${encodeURIComponent(place + ' 食べロ
 }
 };
 
+const fileDownloader = {
+downloadText(filename, text, type = 'application/json') {
+const blob = new Blob([text], { type: `${type};charset=utf-8` });
+const url = URL.createObjectURL(blob);
+const a = document.createElement('a');
+a.href = url;
+a.download = filename;
+document.body.appendChild(a);
+a.click();
+document.body.removeChild(a);
+setTimeout(() => URL.revokeObjectURL(url), 1000);
+},
+
+downloadCanvas(canvas, filename) {
+const a = document.createElement('a');
+a.href = canvas.toDataURL('image/png');
+a.download = filename;
+document.body.appendChild(a);
+a.click();
+document.body.removeChild(a);
+}
+};
+
+const archiveManager = {
+key: 'tabios_trip_archive',
+limit: 50,
+
+list() {
+try {
+  const items = JSON.parse(localStorage.getItem(this.key) || '[]');
+  return Array.isArray(items) ? items : [];
+} catch(e) {
+  return [];
+}
+},
+
+saveList(items) {
+localStorage.setItem(this.key, JSON.stringify(items.slice(0, this.limit)));
+},
+
+saveTrip(data, area) {
+const now = new Date();
+const persona = data.traveler_personality || {};
+const id = `trip_${now.getTime()}_${Math.random().toString(36).slice(2, 8)}`;
+const item = {
+  id,
+  createdAt: now.toISOString(),
+  title: data.trip_title || '旅のしおり',
+  concept: data.trip_concept || '',
+  destination: area || data.destination || data.area || data.hotel?.area || '',
+  personality: {
+    code: persona.code || '',
+    name: persona.name || '',
+    tagline: persona.tagline || ''
+  },
+  data
+};
+const items = [item, ...this.list()].slice(0, this.limit);
+this.saveList(items);
+return item;
+},
+
+openTrip(id) {
+const item = this.list().find(entry => entry.id === id);
+if (!item) return;
+sessionStorage.setItem('tabios_shiori_data', JSON.stringify(item.data));
+sessionStorage.setItem('tabios_destination', item.destination || '');
+const newTab = window.open('shiori.html', '_blank');
+if (!newTab || newTab.closed || typeof newTab.closed === 'undefined') {
+  window.location.href = 'shiori.html';
+}
+},
+
+exportTrip(id) {
+const item = this.list().find(entry => entry.id === id);
+if (!item) return;
+const filename = this._filename(item.title || 'tabios-shiori', item.createdAt);
+fileDownloader.downloadText(filename, JSON.stringify(item.data, null, 2));
+},
+
+exportAll() {
+const items = this.list();
+const payload = {
+  exported_at: new Date().toISOString(),
+  app: 'Tabi OS',
+  trips: items
+};
+fileDownloader.downloadText('tabios-trip-archive.json', JSON.stringify(payload, null, 2));
+},
+
+clear() {
+localStorage.removeItem(this.key);
+this.render();
+},
+
+render() {
+const list = document.getElementById('archive-list');
+const empty = document.getElementById('archive-empty');
+if (!list || !empty) return;
+const items = this.list();
+empty.style.display = items.length ? 'none' : 'block';
+list.innerHTML = items.map(item => this._cardHtml(item)).join('');
+},
+
+_cardHtml(item) {
+const date = this._dateLabel(item.createdAt);
+const destination = item.destination || '行き先未設定';
+const persona = item.personality?.name || '旅タイプ未設定';
+const title = this._esc(item.title || '旅のしおり');
+const concept = this._esc(item.concept || '保存された旅のしおりです。');
+return `
+<article class="archive-card">
+  <div>
+    <div class="archive-meta">
+      <span class="archive-pill">${this._esc(date)}</span>
+      <span class="archive-pill">${this._esc(destination)}</span>
+      <span class="archive-pill">${this._esc(persona)}</span>
+    </div>
+    <h3 class="archive-title">${title}</h3>
+    <p class="archive-desc">${concept}</p>
+  </div>
+  <div class="archive-card-actions">
+    <button type="button" class="btn-copy" data-archive-open="${this._esc(item.id)}">しおりを開く</button>
+    <button type="button" class="btn-ghost" data-archive-export="${this._esc(item.id)}">JSON出力</button>
+  </div>
+</article>`;
+},
+
+_dateLabel(iso) {
+const date = iso ? new Date(iso) : new Date();
+if (Number.isNaN(date.getTime())) return '';
+const p = n => String(n).padStart(2, '0');
+return `${date.getFullYear()}.${p(date.getMonth() + 1)}.${p(date.getDate())}`;
+},
+
+_filename(title, iso) {
+const safe = String(title).replace(/[\\/:*?"<>|]/g, '').replace(/\s+/g, '-').slice(0, 40) || 'tabios-shiori';
+return `${safe}-${this._dateLabel(iso).replace(/\./g, '')}.json`;
+},
+
+_esc(value) {
+return String(value ?? '')
+  .replace(/&/g, '&amp;')
+  .replace(/</g, '&lt;')
+  .replace(/>/g, '&gt;')
+  .replace(/"/g, '&quot;')
+  .replace(/'/g, '&#039;');
+}
+};
+
+const diagnosisImageExporter = {
+async download() {
+const result = AppState.diagnosisResult;
+if (!result) {
+  alert('先に旅タイプ診断を完了してください。');
+  return;
+}
+const canvas = document.createElement('canvas');
+canvas.width = 1080;
+canvas.height = 1350;
+const ctx = canvas.getContext('2d');
+this._drawBackground(ctx, canvas);
+await this._drawTypeImage(ctx, result.code);
+this._drawCopy(ctx, result);
+fileDownloader.downloadCanvas(canvas, `tabios-${result.code.toLowerCase()}-diagnosis.png`);
+},
+
+_drawBackground(ctx, canvas) {
+const grad = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
+grad.addColorStop(0, '#f5edf4');
+grad.addColorStop(0.52, '#fbf7f1');
+grad.addColorStop(1, '#edf3ef');
+ctx.fillStyle = grad;
+ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+ctx.fillStyle = 'rgba(255,255,255,0.88)';
+this._roundRect(ctx, 90, 90, 900, 1170, 56);
+ctx.fill();
+ctx.strokeStyle = 'rgba(111,93,125,0.14)';
+ctx.lineWidth = 2;
+ctx.stroke();
+},
+
+async _drawTypeImage(ctx, code) {
+const src = `images/${String(code || '').toLowerCase()}.png`;
+try {
+  const img = await this._loadImage(src);
+  const x = 315;
+  const y = 185;
+  const size = 450;
+  ctx.save();
+  this._roundRect(ctx, x, y, size, size, 44);
+  ctx.clip();
+  const ratio = Math.max(size / img.width, size / img.height);
+  const w = img.width * ratio;
+  const h = img.height * ratio;
+  ctx.drawImage(img, x + (size - w) / 2, y + (size - h) / 2, w, h);
+  ctx.restore();
+} catch(e) {
+  ctx.fillStyle = '#eee7f3';
+  this._roundRect(ctx, 315, 185, 450, 450, 44);
+  ctx.fill();
+  ctx.fillStyle = '#9d87a8';
+  ctx.font = '700 120px serif';
+  ctx.textAlign = 'center';
+  ctx.fillText('旅', 540, 455);
+}
+},
+
+_drawCopy(ctx, result) {
+ctx.textAlign = 'center';
+ctx.fillStyle = '#6f5d7d';
+ctx.font = '700 30px Montserrat, sans-serif';
+ctx.fillText(`TYPE: ${result.code}`, 540, 700);
+
+ctx.fillStyle = '#3c3432';
+ctx.font = '700 78px serif';
+ctx.fillText(result.name || '旅タイプ', 540, 800);
+
+ctx.fillStyle = '#6f5d7d';
+ctx.font = '700 31px sans-serif';
+this._wrapText(ctx, result.tagline || '', 540, 875, 760, 46);
+
+ctx.fillStyle = '#7f7470';
+ctx.font = '400 28px sans-serif';
+this._wrapText(ctx, result.desc || '', 540, 1010, 760, 44, 5);
+
+ctx.fillStyle = '#9d87a8';
+ctx.font = '700 28px Cinzel, serif';
+ctx.fillText('TABI OS', 540, 1190);
+},
+
+_wrapText(ctx, text, x, y, maxWidth, lineHeight, maxLines = 2) {
+const chars = Array.from(String(text || ''));
+let line = '';
+let lines = [];
+chars.forEach(char => {
+  const test = line + char;
+  if (ctx.measureText(test).width > maxWidth && line) {
+    lines.push(line);
+    line = char;
+  } else {
+    line = test;
+  }
+});
+if (line) lines.push(line);
+lines = lines.slice(0, maxLines);
+if (lines.length === maxLines && chars.length) {
+  const last = lines[maxLines - 1];
+  if (ctx.measureText(last).width >= maxWidth * 0.94) {
+    lines[maxLines - 1] = `${last.slice(0, Math.max(0, last.length - 1))}…`;
+  }
+}
+lines.forEach((lineText, index) => ctx.fillText(lineText, x, y + lineHeight * index));
+},
+
+_loadImage(src) {
+return new Promise((resolve, reject) => {
+  const img = new Image();
+  img.onload = () => resolve(img);
+  img.onerror = reject;
+  img.src = src;
+});
+},
+
+_roundRect(ctx, x, y, w, h, r) {
+ctx.beginPath();
+ctx.moveTo(x + r, y);
+ctx.arcTo(x + w, y, x + w, y + h, r);
+ctx.arcTo(x + w, y + h, x, y + h, r);
+ctx.arcTo(x, y + h, x, y, r);
+ctx.arcTo(x, y, x + w, y, r);
+ctx.closePath();
+}
+};
+
 /* ────────────────────────────────────────────────────────────────
 3. diagnosis
 ──────────────────────────────────────────────────────────────── */
@@ -554,6 +830,8 @@ if (data.image_config && storedPersona) {
 
 sessionStorage.setItem('tabios_shiori_data', JSON.stringify(data));
 sessionStorage.setItem('tabios_destination', area);
+archiveManager.saveTrip(data, area);
+archiveManager.render();
 
 // Open in new tab; fall back to same tab if popup is blocked
 const newTab = window.open('shiori.html', '_blank');
@@ -591,6 +869,10 @@ document.getElementById('btn-to-prompt')?.addEventListener('click', () => {
   this.switchTab('prompt');
 });
 
+document.getElementById('btn-save-diagnosis')?.addEventListener('click', () => {
+  diagnosisImageExporter.download();
+});
+
 // Image load/error
 const img = document.getElementById('result-img');
 const fallback = document.getElementById('result-img-fallback');
@@ -626,6 +908,26 @@ document.getElementById('btn-copy-prompt')?.addEventListener('click', () => {
 // ── Shiori ──
 document.getElementById('btn-gen-shiori')?.addEventListener('click', () => {
   shioriInputHandler.open();
+});
+
+// ── Archive ──
+archiveManager.render();
+
+document.getElementById('btn-export-archive')?.addEventListener('click', () => {
+  archiveManager.exportAll();
+});
+
+document.getElementById('btn-clear-archive')?.addEventListener('click', () => {
+  if (confirm('保存した旅の記録をすべて削除しますか？')) {
+    archiveManager.clear();
+  }
+});
+
+document.getElementById('archive-list')?.addEventListener('click', e => {
+  const openId = e.target.closest('[data-archive-open]')?.dataset.archiveOpen;
+  const exportId = e.target.closest('[data-archive-export]')?.dataset.archiveExport;
+  if (openId) archiveManager.openTrip(openId);
+  if (exportId) archiveManager.exportTrip(exportId);
 });
 
 },
