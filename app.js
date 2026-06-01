@@ -594,6 +594,15 @@ errEl.style.display = 'none';
 // Save destination for shiori
 AppState.destination = destination;
 sessionStorage.setItem('tabios_destination', destination);
+sessionStorage.setItem('tabios_trip_meta', JSON.stringify({
+  destination,
+  start_date: arrDt.slice(0, 10),
+  arrival_datetime: arrDt,
+  departure_datetime: depDt,
+  duration,
+  members: Number(members) || 1,
+  transport
+}));
 
 const myDesc = this.personalityDescs[myPersona] || '';
 const personaEntry = Object.entries(themeManager.personalities).find(([, p]) => p.name === myPersona);
@@ -701,6 +710,15 @@ ${avoids.length > 0 ? `* 「${avoids.join('、')}」を完全に排除できる�
 {
 "trip_title": "旅タイトル（おしゃれに）",
 "trip_concept": "旅のコンセプト（100文字程度）",
+"trip_meta": {
+"destination": "${destination}",
+"start_date": "${arrDt.slice(0, 10)}",
+"arrival_datetime": "${arrDt}",
+"departure_datetime": "${depDt}",
+"duration": "${duration}",
+"members": ${Number(members) || 1},
+"transport": "${transport}"
+},
 "traveler_personality": {
 "code": "${personaCode}",
 "name": "${myPersona}",
@@ -826,6 +844,17 @@ if (storedPersona && !data.traveler_personality) {
 
 if (data.image_config && storedPersona) {
   data.image_config.traveler_personality_stamp = true;
+}
+
+const storedTripMeta = (() => {
+  try { return JSON.parse(sessionStorage.getItem('tabios_trip_meta') || 'null'); }
+  catch(e) { return null; }
+})();
+if (storedTripMeta) {
+  data.trip_meta = { ...storedTripMeta, ...(data.trip_meta || {}) };
+}
+if (area && data.trip_meta && !data.trip_meta.destination) {
+  data.trip_meta.destination = area;
 }
 
 sessionStorage.setItem('tabios_shiori_data', JSON.stringify(data));
