@@ -30,6 +30,10 @@
 <svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path></svg>
 <span class="tab-label">旅のしおり</span>
 </button>
+<button class="tab-btn" data-panel="archive">
+<svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7h18"></path><path d="M5 7l1 13h12l1-13"></path><path d="M9 11h6"></path><path d="M10 3h4a2 2 0 0 1 2 2v2H8V5a2 2 0 0 1 2-2z"></path></svg>
+<span class="tab-label">旅の記録</span>
+</button>
 </nav>
 
 <!-- ━━ Main Panels ━━━━━━━━━━━━━━━━━━━ -->
@@ -94,6 +98,7 @@
         </div>
       </div>
       <button id="btn-to-prompt" class="btn-primary mt-20">このタイプで旅プランを作る →</button>
+      <button id="btn-save-diagnosis" class="btn-ghost">診断結果を画像保存</button>
       <button id="btn-reset-quiz" class="btn-ghost">もう一度診断する</button>
     </div>
 
@@ -405,6 +410,39 @@
       <div class="shiori-hint-icon">✈</div>
       <p>しおりは<strong>別タブ</strong>で開きます。<br>Instagramストーリー用画像（1080×1920px）として保存できます。</p>
     </div>
+
+  </div>
+</section>
+
+<!-- ══════════════════════════════════
+     PANEL 4: 旅の記録
+     ══════════════════════════════════ -->
+<section id="panel-archive" class="app-panel">
+  <div class="panel-inner">
+
+    <div class="panel-hero panel-hero--archive">
+      <span class="hero-eyecatch">Trip Archive</span>
+      <h2 class="hero-title">旅の記録</h2>
+      <p class="hero-desc">作成したしおりをブラウザに保存し、いつでも見返したりJSONファイルとして出力できます。</p>
+    </div>
+
+    <div class="archive-toolbar">
+      <div>
+        <h3 class="section-heading archive-heading"><span class="section-num">01</span>保存済みのしおり</h3>
+        <p class="archive-note">データはこの端末のブラウザ内に保存されます。</p>
+      </div>
+      <div class="archive-actions">
+        <button id="btn-export-archive" class="btn-primary btn-accent">全件をファイル出力</button>
+        <button id="btn-clear-archive" class="btn-ghost">記録をクリア</button>
+      </div>
+    </div>
+
+    <div id="archive-empty" class="archive-empty">
+      <span>✦</span>
+      <p>まだ保存されたしおりがありません。</p>
+    </div>
+
+    <div id="archive-list" class="archive-list"></div>
 
   </div>
 </section>
