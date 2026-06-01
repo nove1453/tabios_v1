@@ -319,9 +319,9 @@ const shioriRenderer = {
 
         <div class="sc-card-footer">
           <span></span>
-          <b>Tabi OS</b>
+          <b>あなたらしく、旅をする。</b>
         </div>
-        <div class="sc-hashtag">#Tabios</div>
+        <div class="sc-hashtag">#TABI OS</div>
       </div>
     `;
   },
@@ -784,25 +784,25 @@ const shioriShare = {
   async share(data, area) {
     const title = data.trip_title ? `旅のしおり: ${data.trip_title}` : '旅のしおり';
     const text = this.makeShareText(data, area);
-    const jsonText = JSON.stringify(data, null, 2);
-    const file = this.makeJsonTextFile(data, jsonText);
+    const pasteText = JSON.stringify(data, null, 2);
+    const file = this.makePasteTextFile(data, pasteText);
 
     try {
       if (navigator.share && navigator.canShare?.({ files: [file] })) {
         await navigator.share({ title, text, files: [file] });
       } else if (navigator.share) {
         await navigator.share({ title, text });
-        this.downloadJsonTextFile(file);
+        this.downloadPasteTextFile(file);
       } else {
-        await navigator.clipboard.writeText(`${text}\n\n--- 添付用JSON ---\n${jsonText}`);
-        this.downloadJsonTextFile(file);
-        alert('共有文とJSONをコピーし、JSONテキストファイルを保存しました。');
+        await navigator.clipboard.writeText(text);
+        this.downloadPasteTextFile(file);
+        alert('共有文をコピーし、貼り付け用ファイルを保存しました。');
       }
     } catch(e) {
       if (e?.name !== 'AbortError') {
-        await navigator.clipboard.writeText(`${text}\n\n--- 添付用JSON ---\n${jsonText}`);
-        this.downloadJsonTextFile(file);
-        alert('共有文とJSONをコピーし、JSONテキストファイルを保存しました。');
+        await navigator.clipboard.writeText(text);
+        this.downloadPasteTextFile(file);
+        alert('共有文をコピーし、貼り付け用ファイルを保存しました。');
       }
     }
   },
@@ -848,13 +848,13 @@ ${this.appUrl}
       .trim();
   },
 
-  makeJsonTextFile(data, jsonText) {
-    const name = this.safeFilename(data.trip_title || 'tabios_shiori');
-    const blob = new Blob([jsonText], { type: 'text/plain;charset=utf-8' });
-    return new File([blob], `${name}.json.txt`, { type: 'text/plain' });
+  makePasteTextFile(data, pasteText) {
+    const name = this.safeFilename(data.trip_title || 'tabi-shiori');
+    const blob = new Blob([pasteText], { type: 'text/plain;charset=utf-8' });
+    return new File([blob], `${name}-paste.txt`, { type: 'text/plain' });
   },
 
-  downloadJsonTextFile(file) {
+  downloadPasteTextFile(file) {
     const url = URL.createObjectURL(file);
     const a = document.createElement('a');
     a.href = url;
