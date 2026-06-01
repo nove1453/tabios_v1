@@ -319,9 +319,9 @@ const shioriRenderer = {
 
         <div class="sc-card-footer">
           <span></span>
-          <b>あなたらしく、旅をする。</b>
+          <b>Tabi OS</b>
         </div>
-        <div class="sc-hashtag">#TABIOS</div>
+        <div class="sc-hashtag">#Tabios</div>
       </div>
     `;
   },
@@ -684,6 +684,7 @@ const imageExporter = {
 };
 
 const shioriShare = {
+  appUrl: 'https://nove1453.github.io/tabios_v1/',
   storagePrefix: 'tabios_share_',
   storageIndexKey: 'tabios_share_index',
 
@@ -781,23 +782,96 @@ const shioriShare = {
   },
 
   async share(data, area) {
-    const url = this.makeUrl(data, area);
     const title = data.trip_title ? `旅のしおり: ${data.trip_title}` : '旅のしおり';
-    const text = data.trip_concept || 'TABI OSで作った旅のしおりです。';
+    const text = this.makeShareText(data, area);
+    const jsonText = JSON.stringify(data, null, 2);
+    const file = this.makeJsonTextFile(data, jsonText);
 
     try {
-      if (navigator.share) {
-        await navigator.share({ title, text, url });
+      if (navigator.share && navigator.canShare?.({ files: [file] })) {
+        await navigator.share({ title, text, files: [file] });
+      } else if (navigator.share) {
+        await navigator.share({ title, text });
+        this.downloadJsonTextFile(file);
       } else {
-        await navigator.clipboard.writeText(url);
-        alert('共有リンクをコピーしました。');
+        await navigator.clipboard.writeText(`${text}\n\n--- 添付用JSON ---\n${jsonText}`);
+        this.downloadJsonTextFile(file);
+        alert('共有文とJSONをコピーし、JSONテキストファイルを保存しました。');
       }
     } catch(e) {
       if (e?.name !== 'AbortError') {
-        await navigator.clipboard.writeText(url);
-        alert('共有リンクをコピーしました。');
+        await navigator.clipboard.writeText(`${text}\n\n--- 添付用JSON ---\n${jsonText}`);
+        this.downloadJsonTextFile(file);
+        alert('共有文とJSONをコピーし、JSONテキストファイルを保存しました。');
       }
     }
+  },
+
+  makeShareText(data, area) {
+    const dateText = this.getDateText(data);
+    const placeText = this.getPlaceText(data, area);
+    const tripLabel = `${dateText}${placeText}`;
+    const firstLine = tripLabel ? `${tripLabel}の旅行のしおりです！` : '旅行のしおりです！';
+    return `${firstLine}
+アプリのURLはこちら
+${this.appUrl}
+旅のしおりに添付の文字列を貼り付けるとしおりが開けます。
+あなたらしい、旅をする。
+＃TABI OS`;
+  },
+
+  getDateText(data) {
+    const raw =
+      data.trip_meta?.start_date ||
+      data.trip_meta?.arrival_datetime ||
+      data.start_date ||
+      data.arrival_datetime ||
+      data.days?.[0]?.date ||
+      '';
+    if (!raw) return '';
+    const date = new Date(raw);
+    if (Number.isNaN(date.getTime())) return String(raw);
+    return `${date.getMonth() + 1}月${date.getDate()}日`;
+  },
+
+  getPlaceText(data, area) {
+    return String(
+      data.trip_meta?.destination ||
+      data.destination ||
+      data.area ||
+      area ||
+      data.hotel?.area ||
+      ''
+    )
+      .replace(/おすすめ宿泊エリア|おすすめ|ホテルの方向性|宿泊エリア|周辺|エリア/g, '')
+      .replace(/[。、「」]/g, '')
+      .trim();
+  },
+
+  makeJsonTextFile(data, jsonText) {
+    const name = this.safeFilename(data.trip_title || 'tabios_shiori');
+    const blob = new Blob([jsonText], { type: 'text/plain;charset=utf-8' });
+    return new File([blob], `${name}.json.txt`, { type: 'text/plain' });
+  },
+
+  downloadJsonTextFile(file) {
+    const url = URL.createObjectURL(file);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = file.name;
+    a.style.display = 'none';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
+  },
+
+  safeFilename(value) {
+    return String(value)
+      .replace(/[\\/:*?"<>|]/g, '')
+      .replace(/\s+/g, '-')
+      .trim()
+      .slice(0, 40) || 'tabios_shiori';
   }
 };
 
