@@ -59,6 +59,13 @@ button {
   text-align: center;
 }
 
+.header-brand-row {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+}
+
 .header-eyecatch {
   display: block;
   font-family: "Cinzel", serif;
@@ -67,6 +74,34 @@ button {
   letter-spacing: 0.1em;
   line-height: 1;
   color: #46384a;
+}
+
+.profile-btn {
+  flex: 0 0 36px;
+  width: 36px;
+  height: 36px;
+  display: inline-grid;
+  place-items: center;
+  margin-top: 8px;
+  border: 1px solid rgba(111, 93, 125, 0.22);
+  border-radius: 50%;
+  color: var(--accent-deep);
+  background: rgba(255, 255, 255, 0.78);
+  box-shadow: 0 10px 24px rgba(78, 58, 52, 0.1);
+  backdrop-filter: blur(12px);
+  transition: transform 0.18s ease, background 0.18s ease, box-shadow 0.18s ease;
+}
+
+.profile-btn svg {
+  width: 18px;
+  height: 18px;
+  display: block;
+}
+
+.profile-btn:hover {
+  transform: translateY(-1px);
+  background: #fff;
+  box-shadow: 0 14px 30px rgba(78, 58, 52, 0.14);
 }
 
 .header-tagline {
@@ -751,6 +786,126 @@ button {
   font-size: 30px;
 }
 
+.profile-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 22px;
+}
+
+.profile-modal.is-open {
+  display: flex;
+}
+
+.profile-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(54, 43, 48, 0.32);
+  backdrop-filter: blur(12px);
+}
+
+.profile-panel {
+  position: relative;
+  width: min(440px, 100%);
+  padding: 28px;
+  border: 1px solid rgba(255, 255, 255, 0.82);
+  border-radius: 26px;
+  background: rgba(255, 255, 255, 0.94);
+  box-shadow: 0 28px 80px rgba(66, 48, 42, 0.2);
+}
+
+.profile-close {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  width: 34px;
+  height: 34px;
+  border: 0;
+  border-radius: 50%;
+  color: var(--muted);
+  background: rgba(238, 231, 243, 0.78);
+  font-size: 20px;
+  line-height: 1;
+}
+
+.profile-kicker {
+  display: block;
+  margin-bottom: 8px;
+  color: var(--accent-deep);
+  font-family: "Montserrat", sans-serif;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.profile-title {
+  margin: 0 0 18px;
+  color: var(--ink);
+  font-size: 24px;
+}
+
+.profile-card {
+  display: grid;
+  grid-template-columns: 86px 1fr;
+  gap: 16px;
+  align-items: center;
+}
+
+.profile-img {
+  width: 86px;
+  aspect-ratio: 1 / 1;
+  border-radius: 20px;
+  object-fit: cover;
+  background: var(--accent-soft);
+}
+
+.profile-code {
+  display: inline-block;
+  margin-bottom: 5px;
+  color: var(--accent-deep);
+  font-family: "Montserrat", sans-serif;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+}
+
+.profile-name {
+  margin: 0;
+  color: var(--ink);
+  font-family: "Noto Serif JP", serif;
+  font-size: 28px;
+  line-height: 1.2;
+}
+
+.profile-tagline {
+  margin: 8px 0 0;
+  color: var(--accent-deep);
+  font-size: 13px;
+  font-weight: 700;
+  line-height: 1.6;
+}
+
+.profile-desc {
+  margin: 18px 0 0;
+  padding: 16px;
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  color: var(--muted);
+  background: rgba(250, 248, 246, 0.9);
+  font-size: 13px;
+  line-height: 1.8;
+}
+
+.profile-empty {
+  margin: 0;
+  color: var(--muted);
+  line-height: 1.8;
+}
+
 @media (hover: hover) {
   .tab-btn:hover,
   .btn-primary:hover,
@@ -765,6 +920,17 @@ button {
 @media (max-width: 720px) {
   .app-header {
     margin-top: 22px;
+  }
+
+  .header-brand-row {
+    gap: 8px;
+  }
+
+  .profile-btn {
+    width: 32px;
+    height: 32px;
+    flex-basis: 32px;
+    margin-top: 4px;
   }
 
   .tab-nav {
@@ -843,5 +1009,17 @@ button {
   .archive-card-actions .btn-copy,
   .archive-card-actions .btn-ghost {
     width: 100%;
+  }
+
+  .profile-panel {
+    padding: 24px 18px;
+  }
+
+  .profile-card {
+    grid-template-columns: 72px 1fr;
+  }
+
+  .profile-img {
+    width: 72px;
   }
 }
