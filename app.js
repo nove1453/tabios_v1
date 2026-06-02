@@ -900,11 +900,25 @@ document.body.removeChild(ta);
 }
 };
 
+function showBookmarkLoading() {
+const overlay = document.querySelector('.bookmark-loading-overlay');
+if (!overlay) return;
+overlay.classList.add('is-active');
+overlay.setAttribute('aria-hidden', 'false');
+}
+
+function hideBookmarkLoading() {
+const overlay = document.querySelector('.bookmark-loading-overlay');
+if (!overlay) return;
+overlay.classList.remove('is-active');
+overlay.setAttribute('aria-hidden', 'true');
+}
+
 /* ────────────────────────────────────────────────────────────────
 5. shioriInputHandler
 ──────────────────────────────────────────────────────────────── */
 const shioriInputHandler = {
-open() {
+async open() {
 const raw = document.getElementById('json-input').value.trim();
 const errEl = document.getElementById('shiori-error');
 
@@ -967,9 +981,18 @@ sessionStorage.setItem('tabios_destination', area);
 archiveManager.saveTrip(data, area);
 archiveManager.render();
 
-// Open in new tab; fall back to same tab if popup is blocked
-const newTab = window.open('shiori.html', '_blank');
-if (!newTab || newTab.closed || typeof newTab.closed === 'undefined') {
+showBookmarkLoading();
+await new Promise(resolve => setTimeout(resolve, 1700));
+
+try {
+  // Open in new tab; fall back to same tab if popup is blocked
+  const newTab = window.open('shiori.html', '_blank');
+  if (!newTab || newTab.closed || typeof newTab.closed === 'undefined') {
+    window.location.href = 'shiori.html';
+    return;
+  }
+  hideBookmarkLoading();
+} catch(e) {
   window.location.href = 'shiori.html';
 }
 
