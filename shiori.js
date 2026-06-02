@@ -162,6 +162,135 @@ const rakutenAffiliate = {
   image: "https://hbb.afl.rakuten.co.jp/hsb/545d0372.2fc54cdc.545d0373.e627ea30/?me_id=2100001&me_adv_id=617091&t=pict"
 };
 
+const defaultPackingItems = [
+  "財布",
+  "スマートフォン",
+  "充電器",
+  "モバイルバッテリー",
+  "着替え",
+  "ハンカチ",
+];
+
+const packingList = {
+  key: 'tabios_packing_list',
+  items: [],
+
+  init(data) {
+    this.key = `tabios_packing_${this._hash(this._tripKey(data))}`;
+    this.items = this.load();
+    this.render();
+    this.bind();
+  },
+
+  load() {
+    try {
+      const stored = JSON.parse(localStorage.getItem(this.key) || 'null');
+      if (Array.isArray(stored)) return stored;
+    } catch(e) {}
+    return defaultPackingItems.map(text => ({
+      id: this._id(),
+      text,
+      checked: false
+    }));
+  },
+
+  save() {
+    localStorage.setItem(this.key, JSON.stringify(this.items));
+  },
+
+  bind() {
+    const form = document.getElementById('packingForm');
+    const list = document.getElementById('packingList');
+    if (form && !form.dataset.bound) {
+      form.dataset.bound = 'true';
+      form.addEventListener('submit', e => {
+        e.preventDefault();
+        this.add();
+      });
+    }
+    if (list && !list.dataset.bound) {
+      list.dataset.bound = 'true';
+      list.addEventListener('change', e => {
+        const checkbox = e.target.closest('[data-packing-check]');
+        if (!checkbox) return;
+        this.toggle(checkbox.dataset.packingCheck, checkbox.checked);
+      });
+      list.addEventListener('click', e => {
+        const button = e.target.closest('[data-packing-delete]');
+        if (!button) return;
+        this.remove(button.dataset.packingDelete);
+      });
+    }
+  },
+
+  add() {
+    const input = document.getElementById('packingInput');
+    const text = input?.value.trim() || '';
+    if (!text) return;
+    this.items.push({ id: this._id(), text, checked: false });
+    input.value = '';
+    this.save();
+    this.render();
+  },
+
+  toggle(id, checked) {
+    this.items = this.items.map(item =>
+      item.id === id ? { ...item, checked } : item
+    );
+    this.save();
+    this.render();
+  },
+
+  remove(id) {
+    this.items = this.items.filter(item => item.id !== id);
+    this.save();
+    this.render();
+  },
+
+  render() {
+    const list = document.getElementById('packingList');
+    if (!list) return;
+    list.innerHTML = this.items.map(item => `
+      <li class="packing-item ${item.checked ? 'is-checked' : ''}">
+        <input class="packing-check" type="checkbox" ${item.checked ? 'checked' : ''} data-packing-check="${this._esc(item.id)}" aria-label="${this._esc(item.text)}をチェック">
+        <span class="packing-text">${this._esc(item.text)}</span>
+        <button class="packing-delete" type="button" data-packing-delete="${this._esc(item.id)}" aria-label="${this._esc(item.text)}を削除">×</button>
+      </li>
+    `).join('');
+  },
+
+  _tripKey(data) {
+    return [
+      data?.trip_title || '',
+      data?.trip_meta?.start_date || data?.trip_meta?.arrival_datetime || '',
+      data?.trip_meta?.destination || data?.destination || ''
+    ].join('|') || 'default';
+  },
+
+  _id() {
+    return `item_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
+  },
+
+  _hash(value) {
+    let hash = 0;
+    const text = String(value);
+    for (let i = 0; i < text.length; i += 1) {
+      hash = ((hash << 5) - hash) + text.charCodeAt(i);
+      hash |= 0;
+    }
+    return Math.abs(hash).toString(36);
+  },
+
+  _esc(value) {
+    return String(value ?? '')
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#039;');
+  }
+};
+
 /* ────────────────────────────────────────────────────────────────
    3. shioriRenderer
 ──────────────────────────────────────────────────────────────── */
@@ -933,6 +1062,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Render everything
   shioriRenderer.render(data, area);
+  packingList.init(data);
 
   // Action buttons
   document.querySelectorAll('[data-save-story]').forEach(btn => {
