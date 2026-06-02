@@ -12,7 +12,15 @@
 <body>
 <!-- ━━ App Header ━━━━━━━━━━━━━━━━━━━━ -->
 <header class="app-header">
+<div class="header-brand-row">
 <span class="header-eyecatch">TABI OS</span>
+<button id="btn-profile" class="profile-btn" type="button" aria-label="プロフィールを表示">
+<svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+<circle cx="12" cy="8" r="4"></circle>
+<path d="M5 21a7 7 0 0 1 14 0"></path>
+</svg>
+</button>
+</div>
 <p class="header-tagline">あなたらしく、旅をする。</p>
 </header>
 
@@ -448,6 +456,16 @@
 </section>
 
 </main>
+
+<div id="profile-modal" class="profile-modal" aria-hidden="true">
+  <div class="profile-backdrop" data-profile-close></div>
+  <section class="profile-panel" role="dialog" aria-modal="true" aria-labelledby="profile-title">
+    <button class="profile-close" type="button" data-profile-close aria-label="閉じる">×</button>
+    <span class="profile-kicker">My Travel Profile</span>
+    <h2 id="profile-title" class="profile-title">あなたの旅タイプ</h2>
+    <div id="profile-content" class="profile-content"></div>
+  </section>
+</div>
 
 <script src="app.js"></script>
 </body>
