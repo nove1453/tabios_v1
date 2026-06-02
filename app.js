@@ -982,7 +982,7 @@ archiveManager.saveTrip(data, area);
 archiveManager.render();
 
 showBookmarkLoading();
-await new Promise(resolve => setTimeout(resolve, 1700));
+await new Promise(resolve => setTimeout(resolve, 5000));
 
 try {
   // Open in new tab; fall back to same tab if popup is blocked
