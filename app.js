@@ -469,6 +469,7 @@ const persona = themeManager.personalities[code];
 
 AppState.diagnosisResult = { code, ...persona };
 sessionStorage.setItem('tabios_personality', JSON.stringify(AppState.diagnosisResult));
+localStorage.setItem('tabios_personality', JSON.stringify(AppState.diagnosisResult));
 
 // Auto-fill prompt tab personality selector
 const sel = document.getElementById('my-personality');
@@ -514,7 +515,77 @@ document.getElementById('result-view').style.display = 'none';
 document.getElementById('result-img').src = '';
 AppState.diagnosisResult = null;
 sessionStorage.removeItem('tabios_personality');
+localStorage.removeItem('tabios_personality');
 window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+};
+
+const profileViewer = {
+open() {
+const modal = document.getElementById('profile-modal');
+const content = document.getElementById('profile-content');
+if (!modal || !content) return;
+const result = this._getPersonality();
+content.innerHTML = result ? this._resultHtml(result) : `
+  <p class="profile-empty">
+    まだ旅タイプ診断の結果がありません。<br>
+    診断を完了すると、ここからいつでも自分の旅タイプを確認できます。
+  </p>
+  <div class="form-actions">
+    <button type="button" class="btn-primary" data-profile-diagnosis>診断をはじめる</button>
+  </div>
+`;
+modal.classList.add('is-open');
+modal.setAttribute('aria-hidden', 'false');
+},
+
+close() {
+const modal = document.getElementById('profile-modal');
+if (!modal) return;
+modal.classList.remove('is-open');
+modal.setAttribute('aria-hidden', 'true');
+},
+
+_getPersonality() {
+if (AppState.diagnosisResult) return AppState.diagnosisResult;
+try {
+  const stored = sessionStorage.getItem('tabios_personality') ||
+    localStorage.getItem('tabios_personality');
+  const parsed = stored ? JSON.parse(stored) : null;
+  if (parsed?.code) {
+    const master = themeManager.personalities[parsed.code] || {};
+    AppState.diagnosisResult = { code: parsed.code, ...master, ...parsed };
+    return AppState.diagnosisResult;
+  }
+} catch(e) {
+  return null;
+}
+return null;
+},
+
+_resultHtml(result) {
+const code = result.code || '';
+const image = code ? `images/${code.toLowerCase()}.png` : '';
+return `
+  <div class="profile-card">
+    <img class="profile-img" src="${this._esc(image)}" alt="" onerror="this.style.display='none';">
+    <div>
+      <span class="profile-code">TYPE: ${this._esc(code || '----')}</span>
+      <h3 class="profile-name">${this._esc(result.name || '旅タイプ')}</h3>
+      <p class="profile-tagline">${this._esc(result.tagline || '')}</p>
+    </div>
+  </div>
+  <p class="profile-desc">${this._esc(result.desc || 'あなたらしい旅の空気を大切にするタイプです。')}</p>
+`;
+},
+
+_esc(value) {
+return String(value ?? '')
+  .replace(/&/g, '&amp;')
+  .replace(/</g, '&lt;')
+  .replace(/>/g, '&gt;')
+  .replace(/"/g, '&quot;')
+  .replace(/'/g, '&#039;');
 }
 };
 
@@ -890,6 +961,16 @@ if (quizForm) {
   quizForm.addEventListener('submit', e => { e.preventDefault(); diagnosis.submit(quizForm); });
 }
 
+try {
+  const storedPersona = JSON.parse(localStorage.getItem('tabios_personality') || 'null');
+  if (storedPersona?.code) {
+    AppState.diagnosisResult = storedPersona;
+    sessionStorage.setItem('tabios_personality', JSON.stringify(storedPersona));
+    const sel = document.getElementById('my-personality');
+    if (sel && storedPersona.name) sel.value = storedPersona.name;
+  }
+} catch(e) {}
+
 document.getElementById('btn-reset-quiz')?.addEventListener('click', () => {
   diagnosis.reset(quizForm);
 });
@@ -937,6 +1018,25 @@ document.getElementById('btn-copy-prompt')?.addEventListener('click', () => {
 // ── Shiori ──
 document.getElementById('btn-gen-shiori')?.addEventListener('click', () => {
   shioriInputHandler.open();
+});
+
+// ── Profile ──
+document.getElementById('btn-profile')?.addEventListener('click', () => {
+  profileViewer.open();
+});
+
+document.getElementById('profile-modal')?.addEventListener('click', e => {
+  if (e.target.closest('[data-profile-close]')) {
+    profileViewer.close();
+  }
+  if (e.target.closest('[data-profile-diagnosis]')) {
+    profileViewer.close();
+    this.switchTab('diagnosis');
+  }
+});
+
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') profileViewer.close();
 });
 
 // ── Archive ──
