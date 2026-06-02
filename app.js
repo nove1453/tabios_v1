@@ -294,11 +294,11 @@ this._wrapText(ctx, result.tagline || '', 540, 875, 760, 46);
 
 ctx.fillStyle = '#7f7470';
 ctx.font = '400 28px sans-serif';
-this._wrapText(ctx, result.desc || '', 540, 1010, 760, 44, 5);
+this._wrapText(ctx, result.desc || '', 540, 990, 760, 42, 4);
 
 ctx.fillStyle = '#9d87a8';
 ctx.font = '700 28px Cinzel, serif';
-ctx.fillText('TABI OS', 540, 1190);
+ctx.fillText('TABI OS', 540, 1230);
 },
 
 _wrapText(ctx, text, x, y, maxWidth, lineHeight, maxLines = 2) {
