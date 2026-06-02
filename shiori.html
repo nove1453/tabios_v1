@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-  <title>旅のしおり — Tabi OS</title>
+  <title>旅のしおり — TABI OS</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&family=Montserrat:wght@400;500;600;700;800&family=Noto+Sans+JP:wght@300;400;500;700&family=Noto+Serif+JP:wght@700&display=swap" rel="stylesheet">
@@ -93,6 +93,20 @@
           <img id="affiliateBannerImg" src="https://hbb.afl.rakuten.co.jp/hsb/545d0372.2fc54cdc.545d0373.e627ea30/?me_id=2100001&amp;me_adv_id=617091&amp;t=pict" alt="" title="">
         </a>
         <p class="affiliate-disclosure">PR: このリンクにはアフィリエイト広告が含まれます。</p>
+      </section>
+
+      <!-- Packing list -->
+      <section class="packing-card" id="packingCard">
+        <span class="packing-eyecatch">PACKING LIST</span>
+        <h2 class="packing-heading">旅の持ち物リスト</h2>
+        <p class="packing-lead">出発前に、必要なものを小さく整えておきましょう。</p>
+
+        <form id="packingForm" class="packing-form" autocomplete="off">
+          <input id="packingInput" class="packing-input" type="text" placeholder="持ち物を追加">
+          <button class="packing-add" type="submit">追加</button>
+        </form>
+
+        <ul id="packingList" class="packing-list"></ul>
       </section>
 
     </div>
