@@ -256,9 +256,9 @@ async _drawTypeImage(ctx, code) {
 const src = `images/${String(code || '').toLowerCase()}.png`;
 try {
   const img = await this._loadImage(src);
-  const x = 315;
-  const y = 185;
-  const size = 450;
+  const x = 340;
+  const y = 155;
+  const size = 400;
   ctx.save();
   this._roundRect(ctx, x, y, size, size, 44);
   ctx.clip();
@@ -269,39 +269,58 @@ try {
   ctx.restore();
 } catch(e) {
   ctx.fillStyle = '#eee7f3';
-  this._roundRect(ctx, 315, 185, 450, 450, 44);
+  this._roundRect(ctx, 340, 155, 400, 400, 44);
   ctx.fill();
   ctx.fillStyle = '#9d87a8';
   ctx.font = '700 120px serif';
   ctx.textAlign = 'center';
-  ctx.fillText('旅', 540, 455);
+  ctx.fillText('旅', 540, 395);
 }
 },
 
 _drawCopy(ctx, result) {
 ctx.textAlign = 'center';
 ctx.fillStyle = '#6f5d7d';
-ctx.font = '700 30px Montserrat, sans-serif';
-ctx.fillText(`TYPE: ${result.code}`, 540, 700);
+ctx.font = '700 28px Montserrat, sans-serif';
+ctx.fillText(`TYPE: ${result.code}`, 540, 620);
 
 ctx.fillStyle = '#3c3432';
-ctx.font = '700 78px serif';
-ctx.fillText(result.name || '旅タイプ', 540, 800);
+ctx.font = '700 70px serif';
+ctx.fillText(result.name || '旅タイプ', 540, 720);
 
 ctx.fillStyle = '#6f5d7d';
-ctx.font = '700 31px sans-serif';
-this._wrapText(ctx, result.tagline || '', 540, 875, 760, 46);
+ctx.font = '700 29px sans-serif';
+const taglineBottom = this._drawFittedText(ctx, result.tagline || '', {
+  x: 540,
+  y: 790,
+  maxWidth: 760,
+  maxHeight: 90,
+  fontFamily: 'sans-serif',
+  weight: '700',
+  startSize: 29,
+  minSize: 22,
+  lineHeight: 1.45
+});
 
 ctx.fillStyle = '#7f7470';
-ctx.font = '400 28px sans-serif';
-this._wrapText(ctx, result.desc || '', 540, 990, 760, 42, 4);
+this._drawFittedText(ctx, result.desc || '', {
+  x: 540,
+  y: Math.max(930, taglineBottom + 50),
+  maxWidth: 760,
+  maxHeight: 215,
+  fontFamily: 'sans-serif',
+  weight: '400',
+  startSize: 25,
+  minSize: 18,
+  lineHeight: 1.55
+});
 
 ctx.fillStyle = '#9d87a8';
 ctx.font = '700 28px Cinzel, serif';
 ctx.fillText('TABI OS', 540, 1230);
 },
 
-_wrapText(ctx, text, x, y, maxWidth, lineHeight, maxLines = 2) {
+_wrapTextLines(ctx, text, maxWidth) {
 const chars = Array.from(String(text || ''));
 let line = '';
 let lines = [];
@@ -315,14 +334,26 @@ chars.forEach(char => {
   }
 });
 if (line) lines.push(line);
-lines = lines.slice(0, maxLines);
-if (lines.length === maxLines && chars.length) {
-  const last = lines[maxLines - 1];
-  if (ctx.measureText(last).width >= maxWidth * 0.94) {
-    lines[maxLines - 1] = `${last.slice(0, Math.max(0, last.length - 1))}…`;
-  }
+return lines;
+},
+
+_drawFittedText(ctx, text, opts) {
+let size = opts.startSize;
+let lines = [];
+let lineHeight = 0;
+while (size >= opts.minSize) {
+  ctx.font = `${opts.weight} ${size}px ${opts.fontFamily}`;
+  lines = this._wrapTextLines(ctx, text, opts.maxWidth);
+  lineHeight = Math.round(size * opts.lineHeight);
+  if (lines.length * lineHeight <= opts.maxHeight) break;
+  size -= 1;
 }
-lines.forEach((lineText, index) => ctx.fillText(lineText, x, y + lineHeight * index));
+ctx.font = `${opts.weight} ${size}px ${opts.fontFamily}`;
+lineHeight = Math.round(size * opts.lineHeight);
+lines.forEach((lineText, index) => {
+  ctx.fillText(lineText, opts.x, opts.y + lineHeight * index);
+});
+return opts.y + Math.max(0, lines.length - 1) * lineHeight;
 },
 
 _loadImage(src) {
@@ -576,6 +607,9 @@ return `
     </div>
   </div>
   <p class="profile-desc">${this._esc(result.desc || 'あなたらしい旅の空気を大切にするタイプです。')}</p>
+  <div class="form-actions">
+    <button type="button" class="btn-primary" data-profile-save>診断結果を画像保存</button>
+  </div>
 `;
 },
 
@@ -1032,6 +1066,9 @@ document.getElementById('profile-modal')?.addEventListener('click', e => {
   if (e.target.closest('[data-profile-diagnosis]')) {
     profileViewer.close();
     this.switchTab('diagnosis');
+  }
+  if (e.target.closest('[data-profile-save]')) {
+    diagnosisImageExporter.download();
   }
 });
 
