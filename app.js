@@ -1152,7 +1152,7 @@ getDecisionItems(tripData) {
 return Array.isArray(tripData?.decision_items) ? tripData.decision_items : [];
 },
 
-renderDecisionReview(tripData) {
+renderDecisionReview(tripData, options = {}) {
 const wrap = document.getElementById('decision-review');
 const list = document.getElementById('decision-list');
 const err = document.getElementById('decision-error');
@@ -1161,10 +1161,21 @@ if (err) err.style.display = 'none';
 const items = this.getDecisionItems(tripData);
 list.innerHTML = items.map(item => this._decisionItemHtml(item)).join('');
 wrap.style.display = 'block';
-wrap.scrollIntoView({ behavior: 'smooth', block: 'start' });
+if (options.scroll !== false) {
+  wrap.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+},
+
+preserveScroll(callback) {
+const scrollY = window.scrollY || document.documentElement.scrollTop || 0;
+callback();
+requestAnimationFrame(() => {
+  window.scrollTo({ top: scrollY, behavior: 'auto' });
+});
 },
 
 selectDecisionOption(decisionItemId, optionId) {
+this.preserveScroll(() => {
 const item = this.getDecisionItems(this.currentData).find(entry => entry.id === decisionItemId);
 const option = item?.options?.find(entry => entry.id === optionId);
 if (!item || !option) return;
@@ -1175,10 +1186,12 @@ this.decisionSelections[decisionItemId] = {
   mode: 'option'
 };
 this.saveDecisionSelections(this._bookmarkId(this.currentData));
-this.renderDecisionReview(this.currentData);
+this.renderDecisionReview(this.currentData, { scroll: false });
+});
 },
 
 setCustomDecisionValue(decisionItemId, value) {
+this.preserveScroll(() => {
 const selectedName = String(value || '').trim();
 if (!selectedName) return;
 this.decisionSelections[decisionItemId] = {
@@ -1188,10 +1201,12 @@ this.decisionSelections[decisionItemId] = {
   mode: 'custom'
 };
 this.saveDecisionSelections(this._bookmarkId(this.currentData));
-this.renderDecisionReview(this.currentData);
+this.renderDecisionReview(this.currentData, { scroll: false });
+});
 },
 
 setDecisionUndecided(decisionItemId) {
+this.preserveScroll(() => {
 const item = this.getDecisionItems(this.currentData).find(entry => entry.id === decisionItemId);
 this.decisionSelections[decisionItemId] = {
   decisionItemId,
@@ -1200,7 +1215,8 @@ this.decisionSelections[decisionItemId] = {
   mode: 'undecided'
 };
 this.saveDecisionSelections(this._bookmarkId(this.currentData));
-this.renderDecisionReview(this.currentData);
+this.renderDecisionReview(this.currentData, { scroll: false });
+});
 },
 
 validateDecisionSelections() {
