@@ -761,6 +761,7 @@ const imageExporter = {
       // 1. Create an off-screen capture clone of the story card at exact 360×640
       const source  = document.getElementById('storyCard');
       const clone   = source.cloneNode(true);
+      clone.classList.add('is-exporting');
 
       clone.style.cssText = [
         'position:fixed',
