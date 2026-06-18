@@ -64,6 +64,12 @@
         <p id="itHotelDesc" class="hotel-desc"></p>
       </div>
 
+      <div id="selectedDecisionCard" class="selected-decision-card" style="display:none;">
+        <span class="selected-decision-label">SELECTED</span>
+        <h3 class="selected-decision-title">選択済み候補</h3>
+        <div id="selectedDecisionList" class="selected-decision-list"></div>
+      </div>
+
       <!-- Days (rendered by JS) -->
       <div id="itDaysContainer"></div>
 
@@ -74,25 +80,18 @@
         <p id="itSummary" class="summary-text"></p>
       </div>
 
-      <!-- Affiliate hotel suggestion -->
-      <section id="affiliateHotelCard" class="affiliate-hotel">
-        <span class="affiliate-eyecatch">Stay Suggestion</span>
-        <h2 class="affiliate-heading">この旅に合う宿を探す</h2>
-        <p class="affiliate-lead">旅タイプと今回の行き先に合わせて、相性の良い宿の方向性を提案します。</p>
+      <!-- Trip todo list -->
+      <section class="trip-todo-card" id="tripTodoCard">
+        <p class="section-label">TRIP TODO</p>
+        <h2>旅行に行くまでにやること</h2>
+        <p class="trip-todo-lead">予約や手配を、出発前にひとつずつ整えておきましょう。</p>
 
-        <div class="affiliate-suggestion">
-          <div>
-            <p id="affiliateDestination" class="affiliate-destination">旅先の宿探し</p>
-            <h3 id="affiliateTitle" class="affiliate-title">この旅に合う宿</h3>
-            <p id="affiliateText" class="affiliate-text">今回の旅の空気感に合わせて、心地よく過ごせる宿を選ぶのがおすすめです。</p>
-          </div>
-          <a id="affiliateButton" class="affiliate-button" href="https://hb.afl.rakuten.co.jp/hsc/545d0372.2fc54cdc.545d0373.e627ea30/?link_type=pict&amp;ut=eyJwYWdlIjoic2hvcCIsInR5cGUiOiJwaWN0IiwiY29sIjoxLCJjYXQiOiIxIiwiYmFuIjo2MTcwOTEsImFtcCI6ZmFsc2V9" target="_blank" rel="nofollow sponsored noopener">宿を探す</a>
-        </div>
+        <form id="tripTodoForm" class="trip-todo-form" autocomplete="off">
+          <input id="tripTodoInput" type="text" class="trip-todo-input" placeholder="ToDoを追加">
+          <button type="submit" class="trip-todo-add-button">追加</button>
+        </form>
 
-        <a id="affiliateBanner" class="affiliate-banner" href="https://hb.afl.rakuten.co.jp/hsc/545d0372.2fc54cdc.545d0373.e627ea30/?link_type=pict&amp;ut=eyJwYWdlIjoic2hvcCIsInR5cGUiOiJwaWN0IiwiY29sIjoxLCJjYXQiOiIxIiwiYmFuIjo2MTcwOTEsImFtcCI6ZmFsc2V9" target="_blank" rel="nofollow sponsored noopener" aria-label="楽天トラベルで宿を探す">
-          <img id="affiliateBannerImg" src="https://hbb.afl.rakuten.co.jp/hsb/545d0372.2fc54cdc.545d0373.e627ea30/?me_id=2100001&amp;me_adv_id=617091&amp;t=pict" alt="" title="">
-        </a>
-        <p class="affiliate-disclosure">PR: このリンクにはアフィリエイト広告が含まれます。</p>
+        <ul id="tripTodoList" class="trip-todo-list"></ul>
       </section>
 
       <!-- Packing list -->
@@ -107,6 +106,21 @@
         </form>
 
         <ul id="packingList" class="packing-list"></ul>
+      </section>
+
+      <!-- Free memo -->
+      <section class="free-memo-card" id="freeMemoCard">
+        <p class="section-label">FREE MEMO</p>
+        <h2>自由メモ</h2>
+        <p class="free-memo-lead">集合場所、予約番号、気になるお店などを自由に残せます。</p>
+
+        <textarea
+          id="freeMemoTextarea"
+          class="free-memo-textarea"
+          placeholder="例：集合場所、予約番号、気になるお店、友達への共有メモなど"
+          rows="5"
+        ></textarea>
+        <p id="freeMemoSaveStatus" class="free-memo-save-status" aria-live="polite"></p>
       </section>
 
     </div>
