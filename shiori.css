@@ -344,7 +344,7 @@ a { color: inherit; text-decoration: none; }
 .sc-route-card {
   position: relative;
   margin-top: 20px;
-  padding: 24px 15px 9px;
+  padding: 26px 16px 10px;
   border: 1px solid rgba(196,168,130,0.52);
   border-radius: 18px;
   background: rgba(255,255,255,0.62);
@@ -353,22 +353,29 @@ a { color: inherit; text-decoration: none; }
   position: absolute;
   top: 0;
   left: 50%;
-  min-width: 88px;
-  max-width: calc(100% - 44px);
-  padding: 6px 13px;
+  min-width: 108px;
+  max-width: calc(100% - 32px);
+  padding: 6px 16px;
+  box-sizing: border-box;
   border-radius: var(--r-full);
   color: #FFFFFF;
   background: linear-gradient(135deg, var(--brand), var(--brand-light));
   font-family: 'Cinzel', serif;
-  font-size: 0.66rem;
+  font-size: 0.6rem;
   font-weight: 700;
-  letter-spacing: 0.1em;
-  line-height: 1;
+  letter-spacing: 0.06em;
+  line-height: 1.15;
   text-align: center;
   white-space: nowrap;
-  overflow: hidden;
+  overflow: visible;
   text-overflow: clip;
   transform: translate(-50%, -50%);
+}
+
+.story-card.is-exporting .sc-day-pill {
+  min-width: 112px;
+  padding-left: 18px;
+  padding-right: 18px;
 }
 .sc-route-list {
   list-style: none;
