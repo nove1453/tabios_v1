@@ -5,6 +5,12 @@ diagnosis / promptGenerator / shioriInputHandler / AppController
 ================================================================ */
 'use strict';
 
+function trackEvent(eventName, params = {}) {
+if (typeof gtag === "function") {
+  gtag("event", eventName, params);
+}
+}
+
 /* ────────────────────────────────────────────────────────────────
 0. App State
 ──────────────────────────────────────────────────────────────── */
