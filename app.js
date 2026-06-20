@@ -17,7 +17,10 @@ if (typeof gtag === "function") {
 const AppState = {
 diagnosisResult: null,   // { code, name, tagline, desc }
 currentTab: 'diagnosis',
-destination: ''
+destination: '',
+analytics: {
+  diagnosisStarted: false
+}
 };
 
 /* ────────────────────────────────────────────────────────────────
@@ -137,6 +140,11 @@ const item = {
 };
 const items = [item, ...this.list()].slice(0, this.limit);
 this.saveList(items);
+trackEvent('bookmark_saved', {
+  bookmark_id: id,
+  destination: item.destination,
+  title: item.title
+});
 return item;
 },
 
@@ -459,6 +467,10 @@ container.appendChild(card);
 container.addEventListener('change', e => {
   const name = e.target.name;
   if (!name) return;
+  if (!AppState.analytics.diagnosisStarted) {
+    AppState.analytics.diagnosisStarted = true;
+    trackEvent('diagnosis_start');
+  }
   const id = name.replace('q', '');
   const card = document.getElementById(`qcard-${id}`);
   if (card) card.classList.remove('error');
@@ -517,6 +529,14 @@ const persona = themeManager.personalities[code];
 AppState.diagnosisResult = { code, ...persona };
 sessionStorage.setItem('tabios_personality', JSON.stringify(AppState.diagnosisResult));
 localStorage.setItem('tabios_personality', JSON.stringify(AppState.diagnosisResult));
+trackEvent('diagnosis_complete', {
+  personality_code: code,
+  personality_name: persona?.name || '',
+  score_p: scores.P,
+  score_a: scores.A,
+  score_v: scores.V,
+  score_l: scores.L
+});
 
 // Auto-fill prompt tab personality selector
 const sel = document.getElementById('my-personality');
@@ -556,6 +576,7 @@ view.scrollIntoView({ behavior: 'smooth', block: 'start' });
 
 reset(form) {
 form.reset();
+AppState.analytics.diagnosisStarted = false;
 document.querySelectorAll('.q-card').forEach(c => c.classList.remove('error'));
 document.getElementById('quiz-error').style.display = 'none';
 document.getElementById('result-view').style.display = 'none';
@@ -1038,6 +1059,13 @@ output.textContent = prompt;
 const result = document.getElementById('prompt-result');
 result.style.display = 'block';
 document.getElementById('copy-toast').style.display = 'none';
+trackEvent('prompt_generated', {
+  destination,
+  duration,
+  personality: myPersona,
+  personality_code: personaCode,
+  members: Number(members) || 1
+});
 result.scrollIntoView({ behavior: 'smooth', block: 'start' });
 
 },
@@ -1108,6 +1136,12 @@ try {
 }
 
 errEl.style.display = 'none';
+trackEvent('json_loaded', {
+  has_decision_items: Array.isArray(data.decision_items) && data.decision_items.length > 0,
+  decision_item_count: Array.isArray(data.decision_items) ? data.decision_items.length : 0,
+  day_count: Array.isArray(data.days) ? data.days.length : 0,
+  title: data.trip_title || ''
+});
 
 const area = document.getElementById('destination').value.trim() ||
              AppState.destination ||
@@ -1191,6 +1225,13 @@ this.decisionSelections[decisionItemId] = {
   selectedName: option.name || '',
   mode: 'option'
 };
+trackEvent('decision_option_selected', {
+  decision_item_id: decisionItemId,
+  option_id: optionId,
+  option_name: option.name || '',
+  decision_type: item.type || '',
+  mode: 'option'
+});
 this.saveDecisionSelections(this._bookmarkId(this.currentData));
 this.renderDecisionReview(this.currentData, { scroll: false });
 });
@@ -1206,6 +1247,12 @@ this.decisionSelections[decisionItemId] = {
   selectedName,
   mode: 'custom'
 };
+trackEvent('decision_option_selected', {
+  decision_item_id: decisionItemId,
+  option_id: '',
+  option_name: selectedName,
+  mode: 'custom'
+});
 this.saveDecisionSelections(this._bookmarkId(this.currentData));
 this.renderDecisionReview(this.currentData, { scroll: false });
 });
@@ -1220,6 +1267,13 @@ this.decisionSelections[decisionItemId] = {
   selectedName: `未定：${item?.label || '現地で相談'}`,
   mode: 'undecided'
 };
+trackEvent('decision_option_selected', {
+  decision_item_id: decisionItemId,
+  option_id: '',
+  option_name: this.decisionSelections[decisionItemId].selectedName,
+  decision_type: item?.type || '',
+  mode: 'undecided'
+});
 this.saveDecisionSelections(this._bookmarkId(this.currentData));
 this.renderDecisionReview(this.currentData, { scroll: false });
 });
@@ -1327,8 +1381,14 @@ this.decisionSelections = {};
 async generateShiori(data, area) {
 sessionStorage.setItem('tabios_shiori_data', JSON.stringify(data));
 sessionStorage.setItem('tabios_destination', area);
-archiveManager.saveTrip(data, area);
+const savedItem = archiveManager.saveTrip(data, area);
 archiveManager.render();
+trackEvent('bookmark_generated', {
+  bookmark_id: savedItem?.id || '',
+  destination: area || data.destination || data.area || data.trip_meta?.destination || '',
+  title: data.trip_title || '',
+  day_count: Array.isArray(data.days) ? data.days.length : 0
+});
 
 showBookmarkLoading();
 await new Promise(resolve => setTimeout(resolve, 5000));
@@ -1599,6 +1659,15 @@ document.getElementById('btn-reset-decision')?.addEventListener('click', () => {
 });
 
 document.getElementById('decision-list')?.addEventListener('click', e => {
+  const searchLink = e.target.closest('.decision-search-button');
+  if (searchLink) {
+    trackEvent('google_search_clicked', {
+      source: 'decision_review',
+      url: searchLink.href || '',
+      label: searchLink.textContent.trim()
+    });
+    return;
+  }
   const optionBtn = e.target.closest('[data-decision-option]');
   if (optionBtn) {
     shioriInputHandler.selectDecisionOption(optionBtn.dataset.decisionOption, optionBtn.dataset.optionId);
