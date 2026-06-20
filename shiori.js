@@ -4,6 +4,12 @@
    ================================================================ */
 'use strict';
 
+function trackEvent(eventName, params = {}) {
+  if (typeof gtag === "function") {
+    gtag("event", eventName, params);
+  }
+}
+
 /* ────────────────────────────────────────────────────────────────
    1. themeManager
 ──────────────────────────────────────────────────────────────── */
@@ -822,6 +828,10 @@ const imageExporter = {
         link.click();
         document.body.removeChild(link);
       }
+      trackEvent('share_image_downloaded', {
+        title: data.trip_title || '',
+        day_count: Array.isArray(data.days) ? data.days.length : 0
+      });
 
     } catch (err) {
       console.error('Image export error:', err);
@@ -1133,6 +1143,16 @@ document.addEventListener('DOMContentLoaded', () => {
   document.querySelectorAll('[data-save-story]').forEach(btn => {
     btn.addEventListener('click', () => {
       imageExporter.download(data);
+    });
+  });
+
+  document.addEventListener('click', e => {
+    const link = e.target.closest('a[href*="google.com/search"]');
+    if (!link) return;
+    trackEvent('google_search_clicked', {
+      source: 'shiori',
+      url: link.href || '',
+      label: link.textContent.trim()
     });
   });
 
