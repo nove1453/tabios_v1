@@ -651,6 +651,16 @@ input[type="datetime-local"].form-input {
   font-weight: 800;
 }
 
+.axis-balance-head span {
+  padding: 3px 8px;
+  border-radius: 999px;
+}
+
+.axis-balance-head span.is-active {
+  color: #fff;
+  background: var(--accent);
+}
+
 .axis-track {
   height: 12px;
   overflow: hidden;
@@ -795,7 +805,7 @@ input[type="datetime-local"].form-input {
   display: grid;
   grid-template-columns: 415px 1fr;
   gap: 36px;
-  min-height: 430px;
+  min-height: 420px;
   border-bottom: 2px solid rgba(206, 166, 94, 0.34);
 }
 
@@ -810,7 +820,7 @@ input[type="datetime-local"].form-input {
 
 .social-animal-frame {
   position: relative;
-  min-height: 406px;
+  min-height: 396px;
 }
 
 .social-animal-frame::before {
@@ -825,7 +835,7 @@ input[type="datetime-local"].form-input {
   position: relative;
   z-index: 1;
   width: 100%;
-  height: 400px;
+  height: 390px;
   object-fit: contain;
   filter: drop-shadow(0 18px 18px rgba(95, 65, 35, 0.16));
 }
@@ -871,7 +881,7 @@ input[type="datetime-local"].form-input {
 }
 
 .social-type-name {
-  margin: 18px 0 12px;
+  margin: 18px 0 4px;
   color: #4b3327;
   font-family: "Noto Serif JP", serif;
   font-size: 52px;
@@ -880,10 +890,11 @@ input[type="datetime-local"].form-input {
 }
 
 .social-type-en {
-  margin-left: 16px;
+  display: block;
+  margin: 0 0 12px;
   color: #d09a4b;
   font-family: "Cinzel", serif;
-  font-size: 26px;
+  font-size: 27px;
   font-style: italic;
   letter-spacing: 0.03em;
 }
@@ -895,17 +906,17 @@ input[type="datetime-local"].form-input {
   border-radius: 999px;
   background: linear-gradient(90deg, #c9903f, #d9aa62);
   color: #fff;
-  font-size: 27px;
+  font-size: 26px;
   font-weight: 700;
   line-height: 1.35;
 }
 
 .social-result-description {
-  margin: 22px 34px 20px 452px;
+  margin: 22px 22px 20px;
   color: #4f3b32;
-  font-size: 25px;
+  font-size: 24px;
   font-weight: 500;
-  line-height: 1.78;
+  line-height: 1.72;
   letter-spacing: 0.02em;
 }
 
@@ -918,7 +929,7 @@ input[type="datetime-local"].form-input {
   grid-template-columns: 1fr auto 1fr;
   align-items: center;
   gap: 16px;
-  margin-bottom: 12px;
+  margin-bottom: 10px;
   color: #583c2d;
   font-family: "Cinzel", serif;
   font-size: 29px;
@@ -949,21 +960,23 @@ input[type="datetime-local"].form-input {
   width: 48px;
   height: 48px;
   border-radius: 8px;
-  color: #fff;
+  color: var(--axis-color);
+  background: rgba(255, 252, 244, 0.62);
+  border: 2px solid var(--axis-color);
   font-family: "Cinzel", serif;
   font-size: 35px;
   font-weight: 700;
 }
 
-.social-axis-badge.right {
-  color: var(--axis-color);
-  background: transparent;
-  border: 2px solid var(--axis-color);
+.social-axis-badge.is-active {
+  color: #fff;
+  background: var(--axis-color);
+  border-color: var(--axis-color);
 }
 
 .social-axis-label {
   color: var(--axis-color);
-  font-size: 25px;
+  font-size: 24px;
   font-weight: 800;
   line-height: 1.1;
 }
@@ -979,7 +992,7 @@ input[type="datetime-local"].form-input {
 .social-axis-percent {
   color: var(--axis-color);
   font-family: "Montserrat", sans-serif;
-  font-size: 31px;
+  font-size: 30px;
   font-weight: 800;
   text-align: right;
 }
@@ -1006,8 +1019,8 @@ input[type="datetime-local"].form-input {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: 0;
-  margin-top: 20px;
-  padding: 16px 18px 14px;
+  margin-top: 18px;
+  padding: 14px 18px 12px;
   border: 2px dashed rgba(206, 166, 94, 0.52);
   border-radius: 20px;
   background: rgba(255, 252, 244, 0.72);
@@ -1051,11 +1064,9 @@ input[type="datetime-local"].form-input {
   position: absolute;
   left: 58px;
   right: 58px;
-  bottom: 14px;
-  display: grid;
-  grid-template-columns: 1fr auto 1fr;
-  gap: 20px;
-  align-items: center;
+  bottom: 18px;
+  height: 58px;
+  display: block;
   color: #4a3428;
   text-align: center;
 }
@@ -1063,11 +1074,30 @@ input[type="datetime-local"].form-input {
 .social-result-footer::before,
 .social-result-footer::after {
   content: "";
+  position: absolute;
+  top: 18px;
   height: 2px;
   background: rgba(206, 166, 94, 0.42);
 }
 
+.social-result-footer::before {
+  left: 0;
+  right: calc(50% + 140px);
+}
+
+.social-result-footer::after {
+  left: calc(50% + 140px);
+  right: 0;
+}
+
 .social-logo {
+  position: absolute;
+  left: 50%;
+  top: 18px;
+  transform: translate(-50%, -50%);
+  min-width: 250px;
+  padding: 0 16px;
+  background: #fffaf0;
   font-family: "Cinzel", serif;
   font-size: 32px;
   font-weight: 700;
@@ -1076,7 +1106,7 @@ input[type="datetime-local"].form-input {
 
 .social-logo small {
   display: block;
-  margin-top: 2px;
+  margin-top: 1px;
   font-family: "Noto Sans JP", sans-serif;
   font-size: 13px;
   font-weight: 500;
