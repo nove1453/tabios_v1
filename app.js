@@ -62,6 +62,47 @@ const bgs = [
 return bgs[(dayNum - 1) % bgs.length];
 }
 };
+
+const travelTypeProfiles = {
+PAVL:{animal:'キツネ',catchphrase:'旅全体の世界観を、美しく組み立てる人。',shortDescription:'行きたい場所やホテル、カフェ、移動ルートまで、旅全体のストーリーを考えるのが好き。同行者の笑顔を想像しながら、最高の旅をプロデュースします。',style:'旅をひとつの作品のように設計し、宿・食事・景色・移動の流れまで美しく整えます。',prep:'旅行前はGoogleマップの保存、ホテル比較、予約導線までかなり丁寧に確認します。',stress:'予定変更や曖昧な返事が続くと、自分だけで抱え込みやすいところがあります。',strengths:['旅全体を俯瞰して計画できる','同行者の好みまで考えられる','旅先選びで大きく外しにくい'],cautions:['予定変更が続くと疲れやすい','準備をひとりで抱え込みやすい'],companionView:'全部考えてくれて頼もしい、任せれば外さないと思われやすいタイプです。',travelTraits:['旅行前からGoogleマップの保存件数が増える','宿と食事の世界観が合っているか気になる','良い写真が撮れる時間帯まで考える','同行者に候補を見せながら、実はおすすめを決めている','予定変更が起きるとすぐ代替案を考える']},
+PAVS:{animal:'リス',catchphrase:'絶景と効率を、軽やかに集める人。',shortDescription:'話題の景色や写真に残したい場所を、無理のない順番で集めていくのが得意。コスパと満足度のバランスを取りながら、旅の見どころを逃しません。',style:'限られた時間で見たい景色をきちんと回収し、写真に残る満足感を大切にします。',prep:'事前にアクセスや営業時間を調べ、無駄な移動を減らすルート作りに安心します。',stress:'期待していた景色が見られない、時間が押して撮影機会を逃す場面に弱いです。',strengths:['効率よく見どころを巡れる','写真映えと予算のバランスがうまい','下調べが堅実'],cautions:['詰め込みすぎると疲れやすい','写真の成果に気分が左右されやすい'],companionView:'段取りがよく、良い景色へ連れて行ってくれる人として見られます。',travelTraits:['日の入り時間を確認する','移動時間の短さにうれしくなる','展望台や海沿いに反応する','無料でも映える場所を探す','撮影後に次の場所へすぐ切り替える']},
+PAEL:{animal:'フクロウ',catchphrase:'土地の物語を、深く味わう人。',shortDescription:'文化、アート、食、歴史を丁寧にたどり、その土地ならではの意味を感じる旅を好みます。予約や下調べも、深く楽しむための準備です。',style:'観光地を消費するより、背景にある文化や作り手の思いを知ることで満たされます。',prep:'美術館、名店、伝統体験などを事前に調べ、価値ある体験に時間とお金を使います。',stress:'浅い情報だけで動く旅や、慌ただしく通過するだけの旅には物足りなさを感じます。',strengths:['土地の魅力を深く掘れる','予約や手配が丁寧','旅後の記憶が濃い'],cautions:['説明や背景を重視しすぎて同行者を待たせやすい','予定の密度が重くなりやすい'],companionView:'知的で、旅に奥行きを足してくれる人として頼られます。',travelTraits:['企画展の会期を確認する','老舗や作家ものに弱い','食事の背景まで知りたい','旅先で本や図録を買う','静かな感動を長く覚えている']},
+PAES:{animal:'イタチ',catchphrase:'ローカルの奥へ、計画的に踏み込む人。',shortDescription:'有名どころだけでなく、地元の路地や市場、個人店を計画的に開拓します。効率よく動きながらも、旅先のリアルな空気を拾うのが得意です。',style:'下調べを武器に、観光パンフレットの外側にある面白さを探します。',prep:'口コミや地図を見比べ、行きにくい場所も安全に回れる順番を組みます。',stress:'チェーン店ばかりの旅や、現地感のない予定には退屈しやすいです。',strengths:['穴場を見つける力がある','計画的にローカル体験へ行ける','移動判断が現実的'],cautions:['マニアックになりすぎることがある','同行者の快適さを忘れがち'],companionView:'普通の旅行では出会えない場所へ連れて行ってくれる人です。',travelTraits:['市場や商店街に寄りたい','路地の看板を見て足が止まる','地元客の多い店に惹かれる','交通手段を細かく調べる','穴場を見つけると共有したくなる']},
+PCVL:{animal:'白鳥',catchphrase:'何もしない贅沢を、きちんと味わう人。',shortDescription:'上質な宿や美しい空間で、予定を詰め込まずに過ごす時間を大切にします。旅先での余白そのものを、特別な体験として楽しめる人です。',style:'旅の中心は移動量よりも、心身がほどける空間とゆったりした時間です。',prep:'宿の雰囲気、部屋、ラウンジ、温泉、朝食まで吟味して選びます。',stress:'予定を詰め込まれたり、落ち着かない場所へ連れ回されると消耗します。',strengths:['上質な宿選びがうまい','余白の価値を知っている','旅に落ち着きを作れる'],cautions:['動き出しが遅くなりやすい','贅沢基準が同行者とずれることがある'],companionView:'一緒にいると旅が大人っぽく整う、安心感のある人です。',travelTraits:['ホテル滞在時間を長めに取る','朝食やラウンジにこだわる','何もしない時間を予定に入れる','静かな景色に満足する','部屋の照明や香りが気になる']},
+PCVS:{animal:'ネコ',catchphrase:'カフェと美術館を、自分の速度でめぐる人。',shortDescription:'カフェ、美術館、雑貨店など、心地よい場所を計画的に選びながら静かに旅を楽しみます。映えよりも、自分の感性が落ち着く空間を大切にします。',style:'移動は少なめでも、好きな場所でゆっくり過ごすことで旅の満足度が上がります。',prep:'混雑しにくい時間帯や近くのカフェを調べ、疲れない流れを作ります。',stress:'人混みや大きな音、急な予定追加が続くと集中力が切れます。',strengths:['心地よい場所選びが上手','無理のない計画を作れる','静かな時間を楽しめる'],cautions:['予定を控えめにしすぎることがある','興味のない場所では反応が薄く見える'],companionView:'落ち着いた旅にしてくれる、センスの良い人と思われます。',travelTraits:['ブックカフェを探す','美術館のショップも楽しむ','混雑回避が得意','長めの休憩を正当化できる','窓際席に弱い']},
+PCEL:{animal:'カピバラ',catchphrase:'癒しを予約して、心身を整える人。',shortDescription:'温泉、スパ、サウナ、宿時間など、回復できる体験を大切にします。無理に動き回るより、旅先でちゃんと休めたことに満足を感じます。',style:'旅をリセットの時間として捉え、体力と気分が整う選択を優先します。',prep:'予約、移動負担、休憩時間を確認し、疲れない旅程を準備します。',stress:'移動が多すぎる日程や、休む場所がない旅では表情が曇りやすいです。',strengths:['回復できる旅を設計できる','無理をしない判断ができる','宿や温浴施設選びがうまい'],cautions:['刺激の多い旅を避けすぎることがある','同行者の活動欲と差が出やすい'],companionView:'一緒にいると旅が穏やかになり、休む大切さを思い出させてくれる人です。',travelTraits:['温泉やサウナ付きに反応する','移動時間が長いと不安','夕方以降は宿で過ごしたい','寝具や静けさを重視する','旅後に元気になっていたい']},
+PCES:{animal:'ハリネズミ',catchphrase:'静かなローカル時間に、そっと潜る人。',shortDescription:'安全な骨組みだけ整えたうえで、旅先では静かな街角や小さな店で過ごすことを好みます。派手さよりも、居心地と素朴な空気を大切にします。',style:'旅先で目立つより、その土地の日常にそっと混ざることに満足します。',prep:'宿や基本ルートは確認しつつ、細部は静かな偶然に任せます。',stress:'大人数の行動や賑やかな観光地が続くと、ひとりの時間が欲しくなります。',strengths:['静かな良さを見つけられる','安全面の準備が堅実','無理なく旅を続けられる'],cautions:['希望を言わずに我慢しやすい','消極的に見られることがある'],companionView:'落ち着いていて、旅の空気をやわらかくしてくれる人です。',travelTraits:['早朝の散歩が好き','地元の小さな店に入る','混雑を見ると予定変更する','読書できる場所を探す','静かな宿にほっとする']},
+FAVL:{animal:'オオカミ',catchphrase:'夜のきらめきを、直感で演出する人。',shortDescription:'旅先の夜景、バー、少し特別な食事など、その瞬間のときめきを逃しません。計画に縛られず、気分が乗った方向へ旅を華やかに変えていきます。',style:'予定よりも、その場で心が動いた瞬間のドラマを大切にします。',prep:'細かく決めすぎず、良さそうな候補をいくつか持って出発します。',stress:'自由に動けない旅や、盛り上がった瞬間に止められる場面に弱いです。',strengths:['旅に高揚感を作れる','直感で良い店を選べる','夜の過ごし方が上手'],cautions:['予算が膨らみやすい','翌日の体力を忘れがち'],companionView:'一緒にいると旅が映画みたいに楽しくなる人です。',travelTraits:['夜景を見ると予定変更したくなる','バーやルーフトップに弱い','直前予約に強い','良い雰囲気に投資する','帰る時間が遅くなりがち']},
+FAVS:{animal:'ウサギ',catchphrase:'今いちばん美しい瞬間へ、軽やかに跳ぶ人。',shortDescription:'天気、光、SNSで見た景色などに反応して、直感的に行き先を変えます。リーズナブルでも写真に残る満足感を大切にするタイプです。',style:'完璧な計画よりも、今この瞬間のきれいさや楽しさを優先します。',prep:'候補は集めますが、当日の気分や天気で軽やかに組み替えます。',stress:'予定を固定されすぎたり、写真を撮る時間がないと不完全燃焼になりがちです。',strengths:['美しい瞬間を見つける感度が高い','身軽に予定変更できる','楽しい空気を作れる'],cautions:['移動効率を見落としやすい','写真優先に見られることがある'],companionView:'一緒にいるとかわいい景色に出会える、感度の高い人です。',travelTraits:['天気で行き先を変える','かわいい壁や看板に止まる','夕焼けに弱い','SNS保存が直感的','軽装でよく歩く']},
+FAEL:{animal:'イルカ',catchphrase:'好奇心の波に乗って、体験へ飛び込む人。',shortDescription:'現地で気になった体験や人との出会いに、迷わず飛び込める冒険タイプ。予定外の出来事すら、旅のハイライトに変えていきます。',style:'旅先で何が起きるかわからない余白にこそ、価値を感じます。',prep:'最低限の安全確認だけして、あとは現地で決める自由を残します。',stress:'細かすぎる予定や、挑戦を止められる状況では窮屈に感じます。',strengths:['体験への飛び込み力がある','人との出会いを楽しめる','旅を物語に変えられる'],cautions:['予約や時間管理が甘くなりやすい','同行者を驚かせすぎることがある'],companionView:'予想外の楽しい展開を連れてくる人として見られます。',travelTraits:['現地ツアーを急に入れる','店員さんと話し込む','道に迷っても楽しむ','少し高くても体験に払う','旅の話が増え続ける']},
+FAES:{animal:'サル',catchphrase:'身軽さと直感で、街を開拓する人。',shortDescription:'決めすぎず、気になった路地や店へ軽やかに入っていきます。お金をかけすぎず、現地のリアルな面白さを見つけるのが得意です。',style:'予定の完成度より、歩いている途中で見つかる小さな発見を楽しみます。',prep:'ざっくり目的地だけ決めて、細かい行動は現地の空気で選びます。',stress:'高級店や予約だらけの旅、自由に寄り道できない行程には退屈しやすいです。',strengths:['身軽に動ける','ローカルの面白さを拾える','節約しながら楽しめる'],cautions:['行き当たりばったりで疲れることがある','集合時間にルーズになりやすい'],companionView:'一緒に歩くと面白いものを見つけてくれる人です。',travelTraits:['路地裏に吸い込まれる','安くてうまい店に燃える','予定表を見すぎない','現地交通を試したがる','寄り道が長い']},
+FCVL:{animal:'黒猫',catchphrase:'気ままな贅沢を、夜風のように楽しむ人。',shortDescription:'細かな計画に縛られず、その日の気分で上質なホテル、スパ、バーなどを選びます。自由とご褒美感の両方を大切にする旅人です。',style:'自分の気分が整うかどうかを基準に、贅沢な時間を自由に選びます。',prep:'決め込みすぎず、良い選択肢をいくつか知っておく程度が心地よいです。',stress:'安さだけで選ぶ旅や、朝から晩まで固定された予定には息苦しさを感じます。',strengths:['自分を満たす選択ができる','上質な場所を嗅ぎ分ける','無理に合わせすぎない'],cautions:['気分で出費が増えやすい','予定共有が少なく同行者を不安にさせることがある'],companionView:'自由なのにセンスがよく、旅に大人の余韻を作る人です。',travelTraits:['当日スパを入れる','良いホテルバーに惹かれる','朝はゆっくりしたい','ご褒美に弱い','予定より気分を優先する']},
+FCVS:{animal:'コアラ',catchphrase:'余白を集めて、心地よく漂う人。',shortDescription:'予定を決めすぎず、気に入ったカフェや宿で長く過ごすことに幸せを感じます。節約感覚もありつつ、自分のペースを何より大切にします。',style:'たくさん回るより、ひとつの場所でゆっくり呼吸できる旅を好みます。',prep:'候補は保存しますが、当日の体調や気分で行くかどうかを決めます。',stress:'急かされること、次々移動すること、騒がしい予定が続くことが苦手です。',strengths:['余白を楽しむ力がある','居心地の良い場所を見つけられる','無駄遣いしすぎない'],cautions:['動かなすぎて機会を逃すことがある','意思表示が曖昧に見える'],companionView:'一緒にいると力が抜ける、穏やかな旅にしてくれる人です。',travelTraits:['同じカフェに長居する','宿で昼寝できる','予定は少なめが安心','散歩だけで満足する','気に入ると動きたくない']},
+FCEL:{animal:'シカ',catchphrase:'街の空気を、詩のように受け取る人。',shortDescription:'予定表よりも、風、音、匂い、人の気配など、目に見えない空気感を味わいます。贅沢な体験も、心が動くなら自然に選びます。',style:'旅先の情緒や余韻を、自分の感覚で深く受け取ることを大切にします。',prep:'細かく決めすぎず、心が動きそうな街や時間帯を選びます。',stress:'効率だけを求められたり、感じる前に次へ急がされると疲れます。',strengths:['空気感を味わう感性がある','旅の余韻を言葉にできる','人や土地に自然に馴染める'],cautions:['目的が曖昧に見えることがある','時間管理が後回しになりがち'],companionView:'旅を静かに深めてくれる、感性豊かな人として映ります。',travelTraits:['知らない街を歩くだけで満たされる','音や匂いを覚えている','予定より雰囲気を優先する','小さな会話が記憶に残る','帰宅後に旅の余韻が続く']},
+FCES:{animal:'ツバメ',catchphrase:'風の向くまま、自然体で旅をする人。',shortDescription:'細かい計画や高価な演出がなくても、行った先で自然に楽しみを見つけられます。気軽さ、身軽さ、自由さを大切にする究極の自然体タイプです。',style:'旅を大げさに構えず、日常の延長のように軽やかに楽しみます。',prep:'必要最低限だけ確認し、あとは現地でどうにかなる感覚を持っています。',stress:'高額な予約や細かい段取り、過剰な期待を背負う旅には疲れやすいです。',strengths:['どこでも自然に楽しめる','節約しながら身軽に動ける','予定変更に強い'],cautions:['準備不足で困ることがある','こだわりがないように見られやすい'],companionView:'気取らず一緒にいられる、旅の空気を軽くしてくれる人です。',travelTraits:['ベンチでぼーっとできる','安い移動手段に抵抗がない','予定がなくても不安が少ない','地元の普通の店で満足する','荷物が少ない']}
+};
+
+function getTravelTypeProfile(code, persona = {}) {
+const detail = travelTypeProfiles[code] || {};
+const longDescription = detail.longDescription || [
+`あなたは、${detail.style || persona.desc || '自分らしい旅の手触りを大切にする旅人'}。`,
+`${detail.prep || '旅行前は必要な情報を集めながら、自分が心地よく動ける流れを探します。'}旅先では、ただ有名な場所を消化するよりも、自分の価値観に合う瞬間を選び取ることを重視します。`,
+`満足を感じるのは、${(detail.travelTraits || ['自分のペースで旅を楽しめたとき'])[0]}ような、自分らしさが旅の中に自然に出た瞬間です。同行者に対しても、無意識のうちに自分なりの快適さや楽しさを共有しようとします。`,
+`一方で、${detail.stress || '自分のペースや期待が大きく崩れる場面'}では少しストレスを感じやすいかもしれません。良い旅にしたい気持ちが強いほど、遠慮やこだわりが表情に出ることもあります。`,
+`${detail.companionView || '同行者からは、旅にその人らしい色を添えてくれる存在として見られやすいでしょう。'}自分でも気づかない強みは、旅先の選択に一貫した美意識や安心感があること。少しだけ余白を残すと、旅はさらに豊かになります。`
+].join('\n\n');
+return {
+  ...persona,
+  ...detail,
+  longDescription,
+  shortDescription: detail.shortDescription || persona.tagline || persona.desc || '',
+  catchphrase: detail.catchphrase || persona.tagline || '',
+  strengths: detail.strengths || [],
+  cautions: detail.cautions || [],
+  travelTraits: detail.travelTraits || [],
+  companionView: detail.companionView || ''
+};
+}
 /* ────────────────────────────────────────────────────────────────
 2. linkGenerator
 ──────────────────────────────────────────────────────────────── */
@@ -250,6 +291,7 @@ if (!result) {
   alert('先に旅タイプ診断を完了してください。');
   return;
 }
+if (document.fonts?.ready) await document.fonts.ready;
 const canvas = document.createElement('canvas');
 canvas.width = 1080;
 canvas.height = 1350;
@@ -258,6 +300,27 @@ this._drawBackground(ctx, canvas);
 await this._drawTypeImage(ctx, result.code);
 this._drawCopy(ctx, result);
 fileDownloader.downloadCanvas(canvas, `tabios-${result.code.toLowerCase()}-diagnosis.png`);
+trackEvent("share_image_downloaded", {
+  type: "diagnosis",
+  travel_type: result.code
+});
+},
+
+async share() {
+const result = AppState.diagnosisResult;
+if (!result) {
+  alert('先に旅タイプ診断を完了してください。');
+  return;
+}
+const text = `私は${result.code}｜${result.name}でした。\n${result.catchphrase || result.tagline || ''}\nあなたらしく、旅をする。\n#TABI OS`;
+if (navigator.share) {
+  try {
+    await navigator.share({ title: 'TABI OS 旅タイプ診断', text });
+    return;
+  } catch(e) {}
+}
+await navigator.clipboard?.writeText(text);
+alert('シェア用テキストをコピーしました。');
 },
 
 _drawBackground(ctx, canvas) {
@@ -304,44 +367,78 @@ try {
 
 _drawCopy(ctx, result) {
 ctx.textAlign = 'center';
+ctx.textBaseline = 'alphabetic';
 ctx.fillStyle = '#6f5d7d';
-ctx.font = '700 28px Montserrat, sans-serif';
-ctx.fillText(`TYPE: ${result.code}`, 540, 620);
+ctx.font = '800 92px Montserrat, sans-serif';
+ctx.fillText(result.code || 'TYPE', 540, 610);
 
 ctx.fillStyle = '#3c3432';
-ctx.font = '700 70px serif';
-ctx.fillText(result.name || '旅タイプ', 540, 720);
+ctx.font = '700 58px "Noto Serif JP", serif';
+ctx.fillText(result.name || '旅タイプ', 540, 690);
 
 ctx.fillStyle = '#6f5d7d';
-ctx.font = '700 29px sans-serif';
-const taglineBottom = this._drawFittedText(ctx, result.tagline || '', {
+ctx.font = '700 29px "Noto Sans JP", sans-serif';
+const taglineBottom = this._drawFittedText(ctx, result.catchphrase || result.tagline || '', {
   x: 540,
-  y: 790,
+  y: 755,
   maxWidth: 760,
-  maxHeight: 90,
-  fontFamily: 'sans-serif',
+  maxHeight: 78,
+  fontFamily: '"Noto Sans JP", sans-serif',
   weight: '700',
   startSize: 29,
-  minSize: 22,
+  minSize: 21,
   lineHeight: 1.45
 });
 
 ctx.fillStyle = '#7f7470';
-this._drawFittedText(ctx, result.desc || '', {
+const descBottom = this._drawFittedText(ctx, result.shortDescription || result.tagline || '', {
   x: 540,
-  y: Math.max(930, taglineBottom + 50),
+  y: Math.max(840, taglineBottom + 44),
   maxWidth: 760,
-  maxHeight: 215,
-  fontFamily: 'sans-serif',
+  maxHeight: 150,
+  fontFamily: '"Noto Sans JP", sans-serif',
   weight: '400',
-  startSize: 25,
-  minSize: 18,
+  startSize: 26,
+  minSize: 20,
   lineHeight: 1.55
 });
 
+this._drawAxisBlock(ctx, result.axisScores || {}, 950);
+
 ctx.fillStyle = '#9d87a8';
-ctx.font = '700 28px Cinzel, serif';
-ctx.fillText('TABI OS', 540, 1230);
+ctx.font = '700 25px Cinzel, serif';
+ctx.fillText('TABI OS', 540, 1292);
+ctx.fillStyle = '#8b7c78';
+ctx.font = '400 22px "Noto Sans JP", sans-serif';
+ctx.fillText('あなたらしく、旅をする。', 540, 1324);
+},
+
+_drawAxisBlock(ctx, axisScores, y) {
+ctx.textAlign = 'left';
+ctx.fillStyle = '#6f5d7d';
+ctx.font = '800 22px Montserrat, sans-serif';
+ctx.fillText('TRAVEL BALANCE', 170, y);
+const axes = Object.values(axisScores);
+axes.forEach((axis, index) => {
+  const rowY = y + 46 + index * 54;
+  ctx.fillStyle = '#4d4240';
+  ctx.font = '700 22px "Noto Sans JP", sans-serif';
+  ctx.fillText(`${axis.leftCode} ${axis.leftLabel} ${axis.leftPercent}%`, 170, rowY);
+  ctx.textAlign = 'right';
+  ctx.fillText(`${axis.rightPercent}% ${axis.rightLabel} ${axis.rightCode}`, 910, rowY);
+  ctx.textAlign = 'left';
+  this._roundRect(ctx, 170, rowY + 12, 740, 14, 7);
+  ctx.fillStyle = '#ece4ec';
+  ctx.fill();
+  this._roundRect(ctx, 170, rowY + 12, 740 * axis.leftPercent / 100, 14, 7);
+  ctx.fillStyle = '#9d87a8';
+  ctx.fill();
+});
+ctx.fillStyle = '#8b7c78';
+ctx.font = '400 20px "Noto Sans JP", sans-serif';
+ctx.textAlign = 'center';
+ctx.fillText('P / F  計画性　　A / C  行動量', 540, y + 276);
+ctx.fillText('V / E  旅の目的　　L / S  お金の使い方', 540, y + 310);
 },
 
 _wrapTextLines(ctx, text, maxWidth) {
@@ -404,6 +501,13 @@ ctx.closePath();
 3. diagnosis
 ──────────────────────────────────────────────────────────────── */
 const diagnosis = {
+
+axisMeta: {
+PF: { axis:'P', leftCode:'P', rightCode:'F', leftLabel:'計画派', rightLabel:'自由派', title:'計画性' },
+AC: { axis:'A', leftCode:'A', rightCode:'C', leftLabel:'活動派', rightLabel:'のんびり派', title:'行動量' },
+VE: { axis:'V', leftCode:'V', rightCode:'E', leftLabel:'景色派', rightLabel:'体験派', title:'旅の目的' },
+LS: { axis:'L', leftCode:'L', rightCode:'S', leftLabel:'贅沢派', rightLabel:'節約派', title:'お金の使い方' }
+},
 
 questions: [
 // ── P / F axis ──────────────────────────────────────────
@@ -491,11 +595,21 @@ return scores;
 },
 
 getCode(scores) {
-const th = 24;
-return (scores.P >= th ? 'P' : 'F') +
-(scores.A >= th ? 'A' : 'C') +
-(scores.V >= th ? 'V' : 'E') +
-(scores.L >= th ? 'L' : 'S');
+const axisScores = this.calculateAxisScores(scores);
+return (axisScores.PF.leftPercent >= 50 ? 'P' : 'F') +
+(axisScores.AC.leftPercent >= 50 ? 'A' : 'C') +
+(axisScores.VE.leftPercent >= 50 ? 'V' : 'E') +
+(axisScores.LS.leftPercent >= 50 ? 'L' : 'S');
+},
+
+calculateAxisScores(scores) {
+const toPercent = value => Math.max(0, Math.min(100, Math.round(((value - 8) / 32) * 100)));
+const build = key => {
+  const meta = this.axisMeta[key];
+  const leftPercent = toPercent(scores[meta.axis]);
+  return { ...meta, leftPercent, rightPercent: 100 - leftPercent };
+};
+return { PF: build('PF'), AC: build('AC'), VE: build('VE'), LS: build('LS') };
 },
 
 submit(form) {
@@ -524,9 +638,11 @@ document.getElementById('quiz-error').style.display = 'none';
 
 const scores = this.calculate(form);
 const code = this.getCode(scores);
-const persona = themeManager.personalities[code];
+const persona = getTravelTypeProfile(code, themeManager.personalities[code]);
+const axisScores = this.calculateAxisScores(scores);
 
 AppState.diagnosisResult = { code, ...persona };
+AppState.diagnosisResult.axisScores = axisScores;
 sessionStorage.setItem('tabios_personality', JSON.stringify(AppState.diagnosisResult));
 localStorage.setItem('tabios_personality', JSON.stringify(AppState.diagnosisResult));
 trackEvent('diagnosis_complete', {
@@ -542,11 +658,11 @@ trackEvent('diagnosis_complete', {
 const sel = document.getElementById('my-personality');
 if (sel && persona) sel.value = persona.name;
 
-this._showResult(code, persona, scores);
+this._showResult(code, persona, axisScores);
 
 },
 
-_showResult(code, persona, scores) {
+_showResult(code, persona, axisScores) {
 const view = document.getElementById('result-view');
 const img = document.getElementById('result-img');
 const fallback = document.getElementById('result-img-fallback');
@@ -557,21 +673,91 @@ img.src = `images/${code.toLowerCase()}.png`;
 
 document.getElementById('result-code').textContent = code;
 document.getElementById('result-name').textContent = persona?.name ?? code;
-document.getElementById('result-tagline').textContent = persona ? `「${persona.tagline}」` : '';
-document.getElementById('result-desc').textContent = persona?.desc ?? '';
+document.getElementById('result-tagline').textContent = persona ? persona.catchphrase || persona.tagline || '' : '';
+document.getElementById('result-desc').innerHTML = this._paragraphs(persona.longDescription || persona.desc || '');
+this._renderAxisBalance(axisScores);
+this._renderAxisComments(axisScores);
+this._renderReportSections(persona);
 
 view.style.display = 'block';
 
-const pct = s => Math.max(0, Math.min(100, Math.round(((s - 8) / 32) * 100)));
-setTimeout(() => {
-  document.getElementById('bar-PF').style.width = `${100 - pct(scores.P)}%`;
-  document.getElementById('bar-AC').style.width = `${100 - pct(scores.A)}%`;
-  document.getElementById('bar-VE').style.width = `${100 - pct(scores.V)}%`;
-  document.getElementById('bar-LS').style.width = `${100 - pct(scores.L)}%`;
-}, 120);
-
 view.scrollIntoView({ behavior: 'smooth', block: 'start' });
 
+},
+
+_renderAxisBalance(axisScores) {
+const list = document.getElementById('axis-balance-list');
+if (!list) return;
+list.innerHTML = Object.values(axisScores).map(axis => `
+  <div class="axis-balance-row">
+    <div class="axis-balance-head">
+      <span>${axis.leftCode} ${axis.leftLabel} ${axis.leftPercent}%</span>
+      <span>${axis.rightPercent}% ${axis.rightLabel} ${axis.rightCode}</span>
+    </div>
+    <div class="axis-track" aria-label="${axis.title}">
+      <div class="axis-bar axis-bar-left" style="width:${axis.leftPercent}%"></div>
+      <div class="axis-bar axis-bar-right" style="width:${axis.rightPercent}%"></div>
+    </div>
+  </div>
+`).join('');
+},
+
+_renderAxisComments(axisScores) {
+const list = document.getElementById('axis-comment-list');
+if (!list) return;
+list.innerHTML = Object.values(axisScores).map(axis => {
+  const primaryLeft = axis.leftPercent >= axis.rightPercent;
+  const code = primaryLeft ? axis.leftCode : axis.rightCode;
+  const label = primaryLeft ? axis.leftLabel : axis.rightLabel;
+  const percent = primaryLeft ? axis.leftPercent : axis.rightPercent;
+  return `
+    <article class="axis-comment-card">
+      <h4>${axis.title}｜${code} ${percent}%</h4>
+      <p>${this._esc(this._axisComment(axis, code, label, percent))}</p>
+    </article>
+  `;
+}).join('');
+},
+
+_axisComment(axis, code, label, percent) {
+const strength = percent <= 55 ? 'ほぼ中間で、わずかに' : percent <= 65 ? 'やや' : percent <= 79 ? '傾向が強めの' : '非常に強い';
+const map = {
+  P:'行きたい場所や移動ルートを整理しておくほど、当日は安心して旅を楽しめます。',
+  F:'予定に余白を残すほど、偶然の出会いや気分の変化を旅の楽しみにできます。',
+  A:'一日の中で複数の場所を巡るほど、旅をしている実感が高まりやすいです。',
+  C:'休憩や宿時間をしっかり確保するほど、旅全体の満足度が上がります。',
+  V:'景色、写真、空間の美しさが、旅の記憶を強くしてくれます。',
+  E:'その土地の空気、人、文化に触れる体験が、深い満足につながります。',
+  L:'上質な宿や食事、特別な体験に投資することで旅の納得感が高まります。',
+  S:'工夫して賢く楽しむことに喜びがあり、身軽で現実的な旅が得意です。'
+};
+return `${strength}${label}です。${map[code] || ''}`;
+},
+
+_renderReportSections(persona) {
+const wrap = document.getElementById('result-report-sections');
+if (!wrap) return;
+const section = (title, body) => `<article class="result-report-card"><h3>${title}</h3>${body}</article>`;
+const list = items => `<ul>${(items || []).map(item => `<li>${this._esc(item)}</li>`).join('')}</ul>`;
+wrap.innerHTML = [
+  section('旅で発揮される長所', list(persona.strengths)),
+  section('旅で起こりやすい弱点・注意点', list(persona.cautions)),
+  section('同行者からどう見られやすいか', `<p>${this._esc(persona.companionView || '')}</p>`),
+  section('旅の特徴・あるある', list(persona.travelTraits))
+].join('');
+},
+
+_paragraphs(text) {
+return String(text || '').split(/\n{2,}/).filter(Boolean).map(p => `<p>${this._esc(p)}</p>`).join('');
+},
+
+_esc(value) {
+return String(value ?? '')
+  .replace(/&/g, '&amp;')
+  .replace(/</g, '&lt;')
+  .replace(/>/g, '&gt;')
+  .replace(/"/g, '&quot;')
+  .replace(/'/g, '&#039;');
 },
 
 reset(form) {
@@ -1611,6 +1797,10 @@ document.getElementById('btn-to-prompt')?.addEventListener('click', () => {
 
 document.getElementById('btn-save-diagnosis')?.addEventListener('click', () => {
   diagnosisImageExporter.download();
+});
+
+document.getElementById('btn-share-diagnosis')?.addEventListener('click', () => {
+  diagnosisImageExporter.share();
 });
 
 // Image load/error
