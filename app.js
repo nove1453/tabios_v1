@@ -343,9 +343,9 @@ async _drawTypeImage(ctx, code) {
 const src = `images/${String(code || '').toLowerCase()}.png`;
 try {
   const img = await this._loadImage(src);
-  const x = 340;
-  const y = 155;
-  const size = 400;
+  const x = 360;
+  const y = 125;
+  const size = 360;
   ctx.save();
   this._roundRect(ctx, x, y, size, size, 44);
   ctx.clip();
@@ -356,12 +356,12 @@ try {
   ctx.restore();
 } catch(e) {
   ctx.fillStyle = '#eee7f3';
-  this._roundRect(ctx, 340, 155, 400, 400, 44);
+  this._roundRect(ctx, 360, 125, 360, 360, 44);
   ctx.fill();
   ctx.fillStyle = '#9d87a8';
   ctx.font = '700 120px serif';
   ctx.textAlign = 'center';
-  ctx.fillText('旅', 540, 395);
+  ctx.fillText('旅', 540, 350);
 }
 },
 
@@ -369,20 +369,20 @@ _drawCopy(ctx, result) {
 ctx.textAlign = 'center';
 ctx.textBaseline = 'alphabetic';
 ctx.fillStyle = '#6f5d7d';
-ctx.font = '800 92px Montserrat, sans-serif';
-ctx.fillText(result.code || 'TYPE', 540, 610);
+ctx.font = '800 62px Montserrat, sans-serif';
+ctx.fillText(result.code || 'TYPE', 540, 575);
 
 ctx.fillStyle = '#3c3432';
-ctx.font = '700 58px "Noto Serif JP", serif';
-ctx.fillText(result.name || '旅タイプ', 540, 690);
+ctx.font = '700 62px "Noto Serif JP", serif';
+ctx.fillText(result.name || '旅タイプ', 540, 650);
 
 ctx.fillStyle = '#6f5d7d';
 ctx.font = '700 29px "Noto Sans JP", sans-serif';
 const taglineBottom = this._drawFittedText(ctx, result.catchphrase || result.tagline || '', {
   x: 540,
-  y: 755,
-  maxWidth: 760,
-  maxHeight: 78,
+  y: 725,
+  maxWidth: 820,
+  maxHeight: 74,
   fontFamily: '"Noto Sans JP", sans-serif',
   weight: '700',
   startSize: 29,
@@ -393,17 +393,17 @@ const taglineBottom = this._drawFittedText(ctx, result.catchphrase || result.tag
 ctx.fillStyle = '#7f7470';
 const descBottom = this._drawFittedText(ctx, result.shortDescription || result.tagline || '', {
   x: 540,
-  y: Math.max(840, taglineBottom + 44),
-  maxWidth: 760,
-  maxHeight: 150,
+  y: Math.max(800, taglineBottom + 34),
+  maxWidth: 820,
+  maxHeight: 220,
   fontFamily: '"Noto Sans JP", sans-serif',
   weight: '400',
-  startSize: 26,
+  startSize: 28,
   minSize: 20,
   lineHeight: 1.55
 });
 
-this._drawAxisBlock(ctx, result.axisScores || {}, 950);
+this._drawAxisBlock(ctx, result.axisScores || {}, 1030);
 
 ctx.fillStyle = '#9d87a8';
 ctx.font = '700 25px Cinzel, serif';
@@ -435,10 +435,6 @@ axes.forEach((axis, index) => {
   ctx.fill();
 });
 ctx.fillStyle = '#8b7c78';
-ctx.font = '400 20px "Noto Sans JP", sans-serif';
-ctx.textAlign = 'center';
-ctx.fillText('P / F  計画性　　A / C  行動量', 540, y + 276);
-ctx.fillText('V / E  旅の目的　　L / S  お金の使い方', 540, y + 310);
 },
 
 _wrapTextLines(ctx, text, maxWidth) {
@@ -1787,20 +1783,12 @@ try {
   }
 } catch(e) {}
 
-document.getElementById('btn-reset-quiz')?.addEventListener('click', () => {
-  diagnosis.reset(quizForm);
-});
-
 document.getElementById('btn-to-prompt')?.addEventListener('click', () => {
   this.switchTab('prompt');
 });
 
 document.getElementById('btn-save-diagnosis')?.addEventListener('click', () => {
   diagnosisImageExporter.download();
-});
-
-document.getElementById('btn-share-diagnosis')?.addEventListener('click', () => {
-  diagnosisImageExporter.share();
 });
 
 // Image load/error
