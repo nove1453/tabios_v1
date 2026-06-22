@@ -325,7 +325,7 @@ const card = document.getElementById('social-result-card');
 if (!card || !result) return;
 const profile = getTravelTypeProfile(result.code, result);
 const axes = result.axisScores || {};
-const axisRows = Object.values(axes).map(axis => this._axisRowHtml(axis)).join('');
+const axisRows = Object.values(axes).map(axis => this._axisRowHtml(axis, result.code)).join('');
 card.innerHTML = `
   <header class="social-result-header">
     <div class="social-animal-frame">
@@ -335,11 +335,12 @@ card.innerHTML = `
       <div class="social-stamp">TABI<br>OS</div>
       <p class="social-kicker">あなたの旅タイプ</p>
       <h2 class="social-type-code">${this._esc(result.code || '')}</h2>
-      <h3 class="social-type-name">${this._esc(result.name || '旅タイプ')}<span class="social-type-en">${this._esc(this._typeEnglish(result.code))}</span></h3>
+      <h3 class="social-type-name">${this._esc(result.name || '旅タイプ')}</h3>
+      <p class="social-type-en">${this._esc(this._typeEnglish(result.code))}</p>
       <p class="social-catchphrase">${this._esc(profile.catchphrase || result.tagline || '')}</p>
     </div>
   </header>
-  <div class="social-result-description">${this._esc(profile.shortDescription || result.tagline || '')}</div>
+  <div class="social-result-description">${this._esc(this._socialDescription(profile, result))}</div>
   <section class="social-balance-section">
     <h3 class="social-balance-title"><span>TRAVEL BALANCE</span></h3>
     ${axisRows}
@@ -353,21 +354,33 @@ card.innerHTML = `
 `;
 },
 
-_axisRowHtml(axis) {
+_axisRowHtml(axis, resultCode) {
 const color = this._axisColor(axis.leftCode);
 const rightEnglish = { F:'Free', C:'Chill', E:'Experience', S:'Saving' }[axis.rightCode] || '';
 const leftEnglish = { P:'Planner', A:'Active', V:'Visual', L:'Luxury' }[axis.leftCode] || '';
+const activeCode = String(resultCode || '').includes(axis.leftCode) ? axis.leftCode : axis.rightCode;
 return `
-  <div class="social-axis-row" style="--axis-color:${color};">
-    <span class="social-axis-badge" style="background:${color};">${this._esc(axis.leftCode)}</span>
+  <div class="social-axis-row ${this._axisClass(axis.leftCode)}" style="--axis-color:${color};">
+    <span class="social-axis-badge ${activeCode === axis.leftCode ? 'is-active' : ''}">${this._esc(axis.leftCode)}</span>
     <span class="social-axis-label">${this._esc(axis.leftLabel)}<small>${this._esc(leftEnglish)}</small></span>
     <span class="social-axis-percent">${axis.leftPercent}%</span>
     <span class="social-axis-track"><span class="social-axis-fill" style="width:${axis.leftPercent}%"></span></span>
     <span class="social-axis-percent right">${axis.rightPercent}%</span>
     <span class="social-axis-label">${this._esc(axis.rightLabel)}<small>${this._esc(rightEnglish)}</small></span>
-    <span class="social-axis-badge right">${this._esc(axis.rightCode)}</span>
+    <span class="social-axis-badge right ${activeCode === axis.rightCode ? 'is-active' : ''}">${this._esc(axis.rightCode)}</span>
   </div>
 `;
+},
+
+_socialDescription(profile, result) {
+const base = profile.shortDescription || result.tagline || '';
+const extra = profile.style || '';
+const text = base.length < 120 && extra ? `${base}${extra}` : base;
+return text.length > 245 ? `${text.slice(0, 242)}...` : text;
+},
+
+_axisClass(code) {
+return { P:'axis-pf', A:'axis-ac', V:'axis-ve', L:'axis-ls' }[code] || '';
 },
 
 _axisGuideHtml() {
@@ -794,8 +807,8 @@ if (!list) return;
 list.innerHTML = Object.values(axisScores).map(axis => `
   <div class="axis-balance-row">
     <div class="axis-balance-head">
-      <span>${axis.leftCode} ${axis.leftLabel} ${axis.leftPercent}%</span>
-      <span>${axis.rightPercent}% ${axis.rightLabel} ${axis.rightCode}</span>
+      <span class="${axis.leftPercent >= axis.rightPercent ? 'is-active' : ''}">${axis.leftCode} ${axis.leftLabel} ${axis.leftPercent}%</span>
+      <span class="${axis.rightPercent > axis.leftPercent ? 'is-active' : ''}">${axis.rightPercent}% ${axis.rightLabel} ${axis.rightCode}</span>
     </div>
     <div class="axis-track" aria-label="${axis.title}">
       <div class="axis-bar axis-bar-left" style="width:${axis.leftPercent}%"></div>
