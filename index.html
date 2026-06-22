@@ -78,45 +78,31 @@
 
     <!-- 診断結果 -->
     <div id="result-view" class="diagnosis-result" style="display:none;">
-  <div class="result-img-wrap">
-    <img id="result-img" class="result-img" src="" alt="旅タイプイラスト">
-    <div id="result-img-fallback" class="result-img-fallback">
-      <span class="fallback-icon">✦</span>
-      <p>イラスト準備中</p>
-    </div>
-  </div>
+      <div class="result-img-wrap">
+        <img id="result-img" class="result-img" src="" alt="旅タイプイラスト">
+        <div id="result-img-fallback" class="result-img-fallback">
+          <span class="fallback-icon">✦</span>
+          <p>イラスト準備中</p>
+        </div>
+      </div>
       <span id="result-code" class="result-code"></span>
       <h2 id="result-name" class="result-name"></h2>
       <p id="result-tagline" class="result-tagline"></p>
       <div class="result-desc-card">
-        <p id="result-desc"></p>
+        <div id="result-desc"></div>
       </div>
       <div class="axis-chart">
-        <h4 class="axis-chart-title">— 旅パラメータ —</h4>
-        <div class="axis-row">
-          <span class="axis-l">P 計画型</span>
-          <div class="axis-track"><div id="bar-PF" class="axis-bar"></div></div>
-          <span class="axis-r">F 自由型</span>
-        </div>
-        <div class="axis-row">
-          <span class="axis-l">A アクティブ</span>
-          <div class="axis-track"><div id="bar-AC" class="axis-bar"></div></div>
-          <span class="axis-r">C チル</span>
-        </div>
-        <div class="axis-row">
-          <span class="axis-l">V 映え</span>
-          <div class="axis-track"><div id="bar-VE" class="axis-bar"></div></div>
-          <span class="axis-r">E 体験</span>
-        </div>
-        <div class="axis-row">
-          <span class="axis-l">L 贅沢</span>
-          <div class="axis-track"><div id="bar-LS" class="axis-bar"></div></div>
-          <span class="axis-r">S 節約</span>
-        </div>
+        <h4 class="axis-chart-title">TRAVEL BALANCE</h4>
+        <div id="axis-balance-list" class="axis-balance-list"></div>
       </div>
-      <button id="btn-to-prompt" class="btn-primary mt-20">このタイプで旅プランを作る →</button>
-      <button id="btn-save-diagnosis" class="btn-ghost">診断結果を画像保存</button>
-      <button id="btn-reset-quiz" class="btn-ghost">もう一度診断する</button>
+      <div id="axis-comment-list" class="axis-comment-list"></div>
+      <div id="result-report-sections" class="result-report-sections"></div>
+      <div class="result-actions">
+        <button id="btn-to-prompt" class="btn-primary">このタイプで旅プランを作る →</button>
+        <button id="btn-save-diagnosis" class="btn-ghost">診断結果画像を保存</button>
+        <button id="btn-share-diagnosis" class="btn-ghost">結果をシェア</button>
+        <button id="btn-reset-quiz" class="btn-ghost">友達にも診断してもらう</button>
+      </div>
     </div>
 
   </div>
