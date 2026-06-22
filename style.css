@@ -607,7 +607,11 @@ input[type="datetime-local"].form-input {
 }
 
 .result-desc-card p {
-  margin: 0;
+  margin: 0 0 1em;
+}
+
+.result-desc-card p:last-child {
+  margin-bottom: 0;
 }
 
 .axis-chart {
@@ -622,37 +626,123 @@ input[type="datetime-local"].form-input {
 .axis-chart-title {
   margin: 0 0 14px;
   color: var(--muted);
+  font-family: "Montserrat", sans-serif;
+  letter-spacing: 0.12em;
+  font-size: 12px;
 }
 
-.axis-row {
+.axis-balance-list {
   display: grid;
-  grid-template-columns: 84px 1fr 84px;
+  gap: 14px;
+}
+
+.axis-balance-row {
+  display: grid;
+  gap: 8px;
+  text-align: left;
+}
+
+.axis-balance-head {
+  display: flex;
+  justify-content: space-between;
   gap: 10px;
-  align-items: center;
-  margin-top: 10px;
+  color: var(--ink);
   font-size: 12px;
   font-weight: 800;
 }
 
-.axis-l {
-  text-align: right;
-}
-
-.axis-r {
-  text-align: left;
-}
-
 .axis-track {
-  height: 10px;
+  height: 12px;
   overflow: hidden;
   border-radius: 999px;
   background: #e8e0e7;
+  display: flex;
 }
 
 .axis-bar {
   height: 100%;
-  border-radius: inherit;
+}
+
+.axis-bar-left {
+  border-radius: 999px 0 0 999px;
   background: linear-gradient(90deg, #b49ab6, #7e6a8c);
+}
+
+.axis-bar-right {
+  border-radius: 0 999px 999px 0;
+  background: rgba(180, 154, 182, 0.26);
+}
+
+.axis-comment-list,
+.result-report-sections {
+  max-width: 720px;
+  margin: 18px auto 0;
+  display: grid;
+  gap: 14px;
+}
+
+.axis-comment-card,
+.result-report-card {
+  padding: 18px;
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  background: rgba(255,255,255,0.78);
+  text-align: left;
+  box-shadow: 0 12px 30px rgba(65, 48, 42, 0.05);
+}
+
+.axis-comment-card h4,
+.result-report-card h3 {
+  margin: 0 0 8px;
+  color: var(--ink);
+  font-size: 15px;
+}
+
+.axis-comment-card p,
+.result-report-card p {
+  margin: 0;
+  color: var(--muted);
+  line-height: 1.85;
+  font-size: 14px;
+}
+
+.result-report-card ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 8px;
+}
+
+.result-report-card li {
+  position: relative;
+  padding-left: 18px;
+  color: var(--ink);
+  line-height: 1.7;
+  font-size: 14px;
+}
+
+.result-report-card li::before {
+  content: "•";
+  position: absolute;
+  left: 3px;
+  color: var(--accent);
+}
+
+.result-actions {
+  max-width: 720px;
+  margin: 22px auto 0;
+  display: grid;
+  gap: 10px;
+}
+
+.social-result-card {
+  position: fixed;
+  left: -9999px;
+  top: 0;
+  width: 1080px;
+  height: 1350px;
+  pointer-events: none;
 }
 
 .prompt-result {
@@ -1621,8 +1711,8 @@ input[type="datetime-local"].form-input {
     flex: 1 1 calc(50% - 9px);
   }
 
-  .axis-row {
-    grid-template-columns: 68px 1fr 68px;
+  .axis-balance-head {
+    font-size: 11px;
     gap: 8px;
   }
 
