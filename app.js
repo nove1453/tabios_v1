@@ -291,19 +291,125 @@ if (!result) {
   alert('先に旅タイプ診断を完了してください。');
   return;
 }
+const card = document.getElementById('social-result-card');
+if (!card || typeof html2canvas !== 'function') {
+  alert('画像生成の準備ができていません。ページを更新して再試行してください。');
+  return;
+}
+this.render(result);
 if (document.fonts?.ready) await document.fonts.ready;
-const canvas = document.createElement('canvas');
-canvas.width = 1080;
-canvas.height = 1350;
-const ctx = canvas.getContext('2d');
-this._drawBackground(ctx, canvas);
-await this._drawTypeImage(ctx, result.code);
-this._drawCopy(ctx, result);
+await this._waitForImages(card);
+card.classList.add('is-exporting');
+let canvas;
+try {
+  canvas = await html2canvas(card, {
+    width: 1080,
+    height: 1350,
+    scale: 2,
+    backgroundColor: null,
+    useCORS: true,
+    logging: false
+  });
+} finally {
+  card.classList.remove('is-exporting');
+}
 fileDownloader.downloadCanvas(canvas, `tabios-${result.code.toLowerCase()}-diagnosis.png`);
 trackEvent("share_image_downloaded", {
   type: "diagnosis",
   travel_type: result.code
 });
+},
+
+render(result) {
+const card = document.getElementById('social-result-card');
+if (!card || !result) return;
+const profile = getTravelTypeProfile(result.code, result);
+const axes = result.axisScores || {};
+const axisRows = Object.values(axes).map(axis => this._axisRowHtml(axis)).join('');
+card.innerHTML = `
+  <header class="social-result-header">
+    <div class="social-animal-frame">
+      <img src="images/${this._esc(String(result.code || '').toLowerCase())}.png" alt="">
+    </div>
+    <div class="social-result-profile">
+      <div class="social-stamp">TABI<br>OS</div>
+      <p class="social-kicker">あなたの旅タイプ</p>
+      <h2 class="social-type-code">${this._esc(result.code || '')}</h2>
+      <h3 class="social-type-name">${this._esc(result.name || '旅タイプ')}<span class="social-type-en">${this._esc(this._typeEnglish(result.code))}</span></h3>
+      <p class="social-catchphrase">${this._esc(profile.catchphrase || result.tagline || '')}</p>
+    </div>
+  </header>
+  <div class="social-result-description">${this._esc(profile.shortDescription || result.tagline || '')}</div>
+  <section class="social-balance-section">
+    <h3 class="social-balance-title"><span>TRAVEL BALANCE</span></h3>
+    ${axisRows}
+  </section>
+  <section class="social-axis-guide">
+    ${this._axisGuideHtml()}
+  </section>
+  <footer class="social-result-footer">
+    <div class="social-logo">TABI OS<small>あなたらしく、旅をする。</small></div>
+  </footer>
+`;
+},
+
+_axisRowHtml(axis) {
+const color = this._axisColor(axis.leftCode);
+const rightEnglish = { F:'Free', C:'Chill', E:'Experience', S:'Saving' }[axis.rightCode] || '';
+const leftEnglish = { P:'Planner', A:'Active', V:'Visual', L:'Luxury' }[axis.leftCode] || '';
+return `
+  <div class="social-axis-row" style="--axis-color:${color};">
+    <span class="social-axis-badge" style="background:${color};">${this._esc(axis.leftCode)}</span>
+    <span class="social-axis-label">${this._esc(axis.leftLabel)}<small>${this._esc(leftEnglish)}</small></span>
+    <span class="social-axis-percent">${axis.leftPercent}%</span>
+    <span class="social-axis-track"><span class="social-axis-fill" style="width:${axis.leftPercent}%"></span></span>
+    <span class="social-axis-percent right">${axis.rightPercent}%</span>
+    <span class="social-axis-label">${this._esc(axis.rightLabel)}<small>${this._esc(rightEnglish)}</small></span>
+    <span class="social-axis-badge right">${this._esc(axis.rightCode)}</span>
+  </div>
+`;
+},
+
+_axisGuideHtml() {
+const guides = [
+  { code:'P / F', title:'計画性', text:'旅の計画を立てることが好きか、現地で自由に決めるのが好きか', color:this._axisColor('P') },
+  { code:'A / C', title:'行動量', text:'たくさんの場所を巡って動くのが好きか、ゆったり過ごすのが好きか', color:this._axisColor('A') },
+  { code:'V / E', title:'旅の目的', text:'絶景や写真など目に残るものを重視するか、体験や空気感を重視するか', color:this._axisColor('V') },
+  { code:'L / S', title:'お金の使い方', text:'満足度を高めるために使うか、賢く節約しながら楽しむか', color:this._axisColor('L') }
+];
+return guides.map(item => `
+  <article class="social-guide-item" style="--axis-color:${item.color};">
+    <div class="social-guide-code">${item.code}</div>
+    <div class="social-guide-title">${item.title}</div>
+    <p class="social-guide-text">${item.text}</p>
+  </article>
+`).join('');
+},
+
+_axisColor(code) {
+return { P:'#4b9187', A:'#79a35d', V:'#d8862f', L:'#5f98c6' }[code] || '#9d87a8';
+},
+
+_typeEnglish(code) {
+const map = { PAVL:'Trip Producer', PAVS:'View Collector', PAEL:'Culture Seeker', PAES:'Local Explorer', PCVL:'Elegant Drifter', PCVS:'Cafe Drifter', PCEL:'Healing Stayer', PCES:'Quiet Wanderer', FAVL:'Night Producer', FAVS:'Photo Drifter', FAEL:'Free Explorer', FAES:'Street Pioneer', FCVL:'Moon Drifter', FCVS:'Margin Collector', FCEL:'Atmosphere Traveler', FCES:'Wind Traveler' };
+return map[code] || 'Traveler';
+},
+
+_waitForImages(root) {
+const images = Array.from(root.querySelectorAll('img'));
+return Promise.all(images.map(img => img.complete ? Promise.resolve() : new Promise(resolve => {
+  img.onload = resolve;
+  img.onerror = resolve;
+})));
+},
+
+_esc(value) {
+return String(value ?? '')
+  .replace(/&/g, '&amp;')
+  .replace(/</g, '&lt;')
+  .replace(/>/g, '&gt;')
+  .replace(/"/g, '&quot;')
+  .replace(/'/g, '&#039;');
 },
 
 async share() {
@@ -674,6 +780,7 @@ document.getElementById('result-desc').innerHTML = this._paragraphs(persona.long
 this._renderAxisBalance(axisScores);
 this._renderAxisComments(axisScores);
 this._renderReportSections(persona);
+diagnosisImageExporter.render(AppState.diagnosisResult);
 
 view.style.display = 'block';
 
